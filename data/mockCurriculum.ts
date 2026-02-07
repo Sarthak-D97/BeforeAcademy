@@ -1,11 +1,9 @@
 import { Curriculum } from '../types/curriculum';
-
-// --- 1. Audit Fields Helper (To satisfy Schema requirements for all collections) ---
 const AUDIT_FIELDS = {
-  createdAt: new Date().toISOString(), // Schema: date
-  updatedAt: new Date().toISOString(), // Schema: date
-  createdBy: "user-admin-001",         // Schema: objectId
-  updatedBy: "user-admin-001",         // Schema: objectId
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  createdBy: "user-admin-001",  
+  updatedBy: "user-admin-001",   
 };
 
 const articleContent: Record<string, string> = {
@@ -109,7 +107,6 @@ export const mockCurriculum: Curriculum = {
   status: true,
   coverImgUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=1000",
   score: 4.9,
-  // Schema Fields Added:
   code: "FS-MASTER-001",
   thumbnail: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=200",
   snippet: "snippet-id-001", 
@@ -123,7 +120,6 @@ export const mockCurriculum: Curriculum = {
       status: true,
       score: 4.8,
       coverImgUrl: "https://images.unsplash.com/photo-1621839673705-6617adf9e890?auto=format&fit=crop&q=80&w=800",
-      // Schema Fields Added:
       code: "SUBJ-FE-01", 
       thumbnail: "https://images.unsplash.com/photo-1621839673705-6617adf9e890?auto=format&fit=crop&q=80&w=200",
       ...AUDIT_FIELDS,
@@ -148,17 +144,16 @@ export const mockCurriculum: Curriculum = {
         ...t,
         status: true,
         order: tIdx + 1,
-        // Schema Fields Added for curriculum_topics:
         code: `TOPIC-01-${tIdx + 1}`,
         heading: "Design Systems",
-        subheading: "Foundational Layouts", // from schema
-        coverImgUrl: "https://images.unsplash.com/photo-1621839673705-6617adf9e890?auto=format&fit=crop&q=80&w=400", // from schema
+        subheading: "Foundational Layouts", 
+        coverImgUrl: "https://images.unsplash.com/photo-1621839673705-6617adf9e890?auto=format&fit=crop&q=80&w=400", 
         description: "Deep dive into core CSS architecture principles.",
         ...AUDIT_FIELDS,
         subtopics: Array.from({ length: 5 }).map((_, sIdx) => ({
           _id: `st-01-${tIdx}-${sIdx}`,
           title: `Module ${sIdx + 1}: ${t.title} Advanced`,
-          description: "Advanced techniques and best practices.", // from schema curriculum_subtopics
+          description: "Advanced techniques and best practices.",
           status: true,
           layout: "list",
           ...AUDIT_FIELDS,
@@ -171,7 +166,7 @@ export const mockCurriculum: Curriculum = {
               status: true,
               path: "https://www.youtube.com/watch?v=OXGznpKZ_sA",
               difficulty: "medium",
-              topic: t.slug, // materials.topic (string)
+              topic: t.slug, 
               ...AUDIT_FIELDS,
             },
             {
@@ -199,7 +194,7 @@ export const mockCurriculum: Curriculum = {
               status: true,
               difficulty: "hard",
               topic: t.slug,
-              codeQuestion: `cq-01-${tIdx}-${sIdx}`, // materials.codeQuestion (objectId ref)
+              codeQuestion: `cq-01-${tIdx}-${sIdx}`, 
               companies: ["Amazon", "Google"],
               ...AUDIT_FIELDS,
             }
