@@ -116,15 +116,27 @@ export default function CurriculumRenderer({ data }: Props) {
         <AppBar position="sticky" color="default" elevation={0} sx={{ borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}>
           <Container maxWidth="xl">
             <Toolbar disableGutters sx={{ minHeight: 64 }}>
-
-              {/* Logo Area */}
-              <Typography variant="h6" fontWeight="800" sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Typography
+                variant="h4" 
+                sx={{
+                  flexGrow: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.8,
+                  fontFamily: '"Caveat", cursive', 
+                  fontWeight: 1600,
+                  fontSize: '1.2rem',
+                  letterSpacing: 3,
+                  cursor: 'pointer',
+                  userSelect: 'none'
+                }}
+              >
                 <Box
                   component="img"
-                  src="/logo1.png" 
+                  src="/logo1.png"
                   alt="B Logo"
                   sx={{
-                    height: 32,
+                    height: 38,
                     width: 'auto',
                     mr: 1,
                     display: 'block'
@@ -132,8 +144,6 @@ export default function CurriculumRenderer({ data }: Props) {
                 />
                 BeforeAcademy
               </Typography>
-
-              {/* Actions Area */}
               <TopBarActions />
 
             </Toolbar>

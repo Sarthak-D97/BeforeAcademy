@@ -19,7 +19,7 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import ArticleIcon from '@mui/icons-material/Article';
-import CodeIcon from '@mui/icons-material/Code'; // <--- 1. Added Import
+import CodeIcon from '@mui/icons-material/Code';
 
 import { Curriculum_Subjects, Materials } from '../../types/curriculum';
 
