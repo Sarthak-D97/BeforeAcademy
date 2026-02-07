@@ -12,15 +12,12 @@ import {
   useTheme 
 } from '@mui/material';
 import { Curriculum_Subjects } from '../../types/curriculum';
-
 interface Props {
   subjects: Curriculum_Subjects[];
   onSelect: (s: Curriculum_Subjects) => void;
 }
-
 export default function SubjectGrid({ subjects, onSelect }: Props) {
   const theme = useTheme();
-
   return (
     <Container maxWidth="xl" sx={{ py: 6 }}>
       <Typography 
@@ -67,11 +64,10 @@ export default function SubjectGrid({ subjects, onSelect }: Props) {
                 <CardMedia
                   component="img"
                   height="220"
-                  // This pulls the URL directly from your mockCurriculum.ts
                   image={subject.coverImgUrl || `https://placehold.co/600x400/png?text=${subject.title.substring(0,3)}`}
                   alt={subject.title}
                   sx={{ 
-                    objectFit: 'cover', // Ensures Unsplash images look perfect
+                    objectFit: 'cover',
                     filter: theme.palette.mode === 'dark' ? 'brightness(0.8)' : 'none' 
                   }} 
                 />

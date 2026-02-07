@@ -1,26 +1,132 @@
 import { Curriculum } from '../types/curriculum';
 
+// --- 1. Audit Fields Helper (To satisfy Schema requirements for all collections) ---
+const AUDIT_FIELDS = {
+  createdAt: new Date().toISOString(), // Schema: date
+  updatedAt: new Date().toISOString(), // Schema: date
+  createdBy: "user-admin-001",         // Schema: objectId
+  updatedBy: "user-admin-001",         // Schema: objectId
+};
+
+const articleContent: Record<string, string> = {
+  "semantic-html5": `
+# Mastering Semantic HTML5
+
+Semantic HTML5 introduces elements with meaning, such as \`<article>\`, \`<section>\`, \`<nav>\`, \`<header>\`, and \`<footer>\`. 
+
+## Why use it?
+1. **Accessibility**: Screen readers rely on semantic tags to navigate the page effectively.
+2. **SEO**: Search engines understand the structure and hierarchy of your content better.
+3. **Maintainability**: Code is easier to read and understand for other developers.
+
+## Key Elements
+* **<header>**: Introductory content or navigational links.
+* **<nav>**: Section of navigation links.
+* **<main>**: The dominant content of the <body>.
+* **<article>**: Self-contained composition (e.g., blog post, news story).
+* **<section>**: Thematic grouping of content, typically with a heading.
+* **<aside>**: Content tangentially related to the main content (sidebars).
+* **<footer>**: Footer for a section or page.
+  `,
+  "css-box-model": `
+# The CSS Box Model
+
+Every element in web design is a rectangular box. The CSS Box Model describes how these boxes work together to create a layout.
+
+## Components
+1. **Content**: The actual image or text.
+2. **Padding**: Transparent area around the content. Clears an area around the content.
+3. **Border**: Goes around the padding and content.
+4. **Margin**: Space outside the border.
+
+## Box-Sizing
+The property \`box-sizing: border-box;\` is crucial in modern CSS. It ensures padding and border are included in the element's total width and height, making layout calculations much more intuitive.
+  `,
+  "flexbox-layout": `
+# Flexbox Layout Engine
+
+The Flexible Box Layout Module, makes it easier to design flexible responsive layout structure without using float or positioning.
+
+## Key Concepts
+* **Main Axis**: The primary axis along which flex items are laid out (defined by \`flex-direction\`).
+* **Cross Axis**: The axis perpendicular to the main axis.
+* **Justify Content**: Aligns items along the main axis.
+* **Align Items**: Aligns items along the cross axis.
+
+## Common Use Cases
+* Centering elements vertically and horizontally.
+* Creating navigation bars.
+* Equal height columns.
+  `,
+  "component-lifecycle": `
+# React Component Lifecycle
+
+Understanding the lifecycle of a component is essential for managing side effects, data fetching, and performance.
+
+## Phases
+1. **Mounting**: When an instance of a component is being created and inserted into the DOM.
+   * \`constructor()\`, \`render()\`, \`componentDidMount()\`
+2. **Updating**: Caused by changes to props or state.
+   * \`render()\`, \`componentDidUpdate()\`
+3. **Unmounting**: When a component is being removed from the DOM.
+   * \`componentWillUnmount()\`
+
+In functional components, the \`useEffect\` hook replaces most of these lifecycle methods.
+  `,
+  "nodejs-internals": `
+# Node.js Architecture
+
+Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. It uses an event-driven, non-blocking I/O model.
+
+## V8 Engine
+Converts JavaScript code into machine code that the processor understands.
+
+## Libuv
+A C library that provides support for asynchronous I/O based on event loops. It handles file systems, DNS, network, child processes, pipes, signal handling, polling and streaming.
+
+## The Event Loop
+The mechanism that allows Node.js to perform non-blocking I/O operations despite JavaScript being single-threaded. It offloads operations to the system kernel whenever possible.
+  `,
+  "big-o": `
+# Big O Analysis
+
+Big O notation is used to classify algorithms according to how their run time or space requirements grow as the input size grows.
+
+## Common Complexities
+* **O(1)**: Constant Time. No matter how much data, it takes the same amount of time. (e.g., accessing an array index).
+* **O(log n)**: Logarithmic Time. Cuts the problem in half each step. (e.g., Binary Search).
+* **O(n)**: Linear Time. Performance grows linearly with input. (e.g., looping through an array).
+* **O(n log n)**: Linearithmic Time. (e.g., Merge Sort, Quick Sort).
+* **O(n^2)**: Quadratic Time. (e.g., Nested loops).
+  `
+};
+
 export const mockCurriculum: Curriculum = {
   _id: "curr-001",
   title: "Full Stack Software Engineering Masterclass",
   description: "A comprehensive professional roadmap from foundational web technologies to advanced system architecture.",
   slug: "full-stack-software-engineering",
   status: true,
-  // Main Course Cover
-  coverImgUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=1000", 
+  coverImgUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=1000",
   score: 4.9,
+  // Schema Fields Added:
+  code: "FS-MASTER-001",
+  thumbnail: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=200",
+  snippet: "snippet-id-001", 
+  ...AUDIT_FIELDS,
+
   subjects: [
-    // =========================================================
-    // SUBJECT 1: MODERN HTML & CSS ARCHITECTURE
-    // =========================================================
     {
       _id: "subj-01",
       title: "Modern HTML & CSS Architecture",
       slug: "html-css-architecture",
       status: true,
       score: 4.8,
-      // Added Cover Image: Artistic Web Layout
       coverImgUrl: "https://images.unsplash.com/photo-1621839673705-6617adf9e890?auto=format&fit=crop&q=80&w=800",
+      // Schema Fields Added:
+      code: "SUBJ-FE-01", 
+      thumbnail: "https://images.unsplash.com/photo-1621839673705-6617adf9e890?auto=format&fit=crop&q=80&w=200",
+      ...AUDIT_FIELDS,
       topics: [
         { title: "Semantic HTML5", slug: "semantic-html5" },
         { title: "CSS Box Model & Sizing", slug: "css-box-model" },
@@ -42,12 +148,20 @@ export const mockCurriculum: Curriculum = {
         ...t,
         status: true,
         order: tIdx + 1,
+        // Schema Fields Added for curriculum_topics:
+        code: `TOPIC-01-${tIdx + 1}`,
         heading: "Design Systems",
+        subheading: "Foundational Layouts", // from schema
+        coverImgUrl: "https://images.unsplash.com/photo-1621839673705-6617adf9e890?auto=format&fit=crop&q=80&w=400", // from schema
+        description: "Deep dive into core CSS architecture principles.",
+        ...AUDIT_FIELDS,
         subtopics: Array.from({ length: 5 }).map((_, sIdx) => ({
           _id: `st-01-${tIdx}-${sIdx}`,
           title: `Module ${sIdx + 1}: ${t.title} Advanced`,
+          description: "Advanced techniques and best practices.", // from schema curriculum_subtopics
           status: true,
           layout: "list",
+          ...AUDIT_FIELDS,
           materials: [
             {
               _id: `m-01-${tIdx}-${sIdx}-1`,
@@ -56,7 +170,9 @@ export const mockCurriculum: Curriculum = {
               category: "video",
               status: true,
               path: "https://www.youtube.com/watch?v=OXGznpKZ_sA",
-              difficulty: "medium"
+              difficulty: "medium",
+              topic: t.slug, // materials.topic (string)
+              ...AUDIT_FIELDS,
             },
             {
               _id: `m-01-${tIdx}-${sIdx}-2`,
@@ -64,7 +180,16 @@ export const mockCurriculum: Curriculum = {
               slug: `article-${t.slug}`,
               category: "article",
               status: true,
-              difficulty: "easy"
+              difficulty: "easy",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
+              content: articleContent[t.slug] || `This is a comprehensive guide about ${t.title}. It covers best practices, common pitfalls, and advanced techniques used by senior engineers.`,
+              reactions: {
+                fire: Math.floor(Math.random() * 50) + 1,
+                thumbsUp: Math.floor(Math.random() * 100) + 10,
+                thumbsDown: Math.floor(Math.random() * 5),
+                heart: Math.floor(Math.random() * 30) + 1
+              }
             },
             {
               _id: `m-01-${tIdx}-${sIdx}-3`,
@@ -73,24 +198,26 @@ export const mockCurriculum: Curriculum = {
               category: "problem",
               status: true,
               difficulty: "hard",
-              companies: ["Amazon", "Google"]
+              topic: t.slug,
+              codeQuestion: `cq-01-${tIdx}-${sIdx}`, // materials.codeQuestion (objectId ref)
+              companies: ["Amazon", "Google"],
+              ...AUDIT_FIELDS,
             }
           ]
         }))
       }))
     },
 
-    // =========================================================
-    // SUBJECT 2: JAVASCRIPT & CORE PROGRAMMING
-    // =========================================================
     {
       _id: "subj-02",
       title: "JavaScript & Core Programming",
       slug: "javascript-mastery",
       status: true,
       score: 5.0,
-      // Added Cover Image: JavaScript Code
       coverImgUrl: "https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?auto=format&fit=crop&q=80&w=800",
+      code: "SUBJ-JS-02",
+      thumbnail: "https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?auto=format&fit=crop&q=80&w=200",
+      ...AUDIT_FIELDS,
       topics: [
         { title: "ECMAScript Evolution (ES6+)", slug: "es6-plus" },
         { title: "The Execution Context & Stack", slug: "execution-context" },
@@ -112,12 +239,19 @@ export const mockCurriculum: Curriculum = {
         ...t,
         status: true,
         order: tIdx + 1,
+        code: `TOPIC-02-${tIdx + 1}`,
         heading: "Engine Logic",
+        subheading: "Advanced JS Concepts",
+        coverImgUrl: "https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?auto=format&fit=crop&q=80&w=400",
+        description: "Mastering the runtime and core language features.",
+        ...AUDIT_FIELDS,
         subtopics: Array.from({ length: 5 }).map((_, sIdx) => ({
           _id: `st-02-${tIdx}-${sIdx}`,
           title: `Logic Level ${sIdx + 1}`,
+          description: "Practical application of core logic.",
           status: true,
           layout: "grid",
+          ...AUDIT_FIELDS,
           materials: [
             {
               _id: `m-02-${tIdx}-${sIdx}-1`,
@@ -126,7 +260,9 @@ export const mockCurriculum: Curriculum = {
               category: "video",
               status: true,
               path: "https://www.youtube.com/watch?v=PkZNo7MFNFg",
-              difficulty: "hard"
+              difficulty: "hard",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
             },
             {
               _id: `m-02-${tIdx}-${sIdx}-2`,
@@ -134,7 +270,16 @@ export const mockCurriculum: Curriculum = {
               slug: `article-${t.slug}`,
               category: "article",
               status: true,
-              difficulty: "medium"
+              difficulty: "medium",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
+              content: articleContent[t.slug] || `Explore the depths of ${t.title} with this detailed technical article.`,
+              reactions: {
+                fire: Math.floor(Math.random() * 50) + 1,
+                thumbsUp: Math.floor(Math.random() * 100) + 10,
+                thumbsDown: Math.floor(Math.random() * 5),
+                heart: Math.floor(Math.random() * 30) + 1
+              }
             },
             {
               _id: `m-02-${tIdx}-${sIdx}-3`,
@@ -143,24 +288,26 @@ export const mockCurriculum: Curriculum = {
               category: "problem",
               status: true,
               difficulty: "hard",
-              companies: ["Microsoft", "Uber", "Netflix"]
+              topic: t.slug,
+              codeQuestion: `cq-02-${tIdx}-${sIdx}`,
+              companies: ["Microsoft", "Uber", "Netflix"],
+              ...AUDIT_FIELDS,
             }
           ]
         }))
       }))
     },
 
-    // =========================================================
-    // SUBJECT 3: REACT & FRONTEND FRAMEWORKS
-    // =========================================================
     {
       _id: "subj-03",
       title: "React & Frontend Frameworks",
       slug: "react-frameworks",
       status: true,
       score: 4.9,
-      // Added Cover Image: React/Atom Concept
       coverImgUrl: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=800",
+      code: "SUBJ-RCT-03",
+      thumbnail: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=200",
+      ...AUDIT_FIELDS,
       topics: [
         { title: "React Component Lifecycle", slug: "component-lifecycle" },
         { title: "Advanced Hooks (useMemo, useCallback)", slug: "advanced-hooks" },
@@ -182,12 +329,19 @@ export const mockCurriculum: Curriculum = {
         ...t,
         status: true,
         order: tIdx + 1,
+        code: `TOPIC-03-${tIdx + 1}`,
         heading: "Framework Mastery",
+        subheading: "Component Architecture",
+        coverImgUrl: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=400",
+        description: "Building scalable frontend applications.",
+        ...AUDIT_FIELDS,
         subtopics: Array.from({ length: 5 }).map((_, sIdx) => ({
           _id: `st-03-${tIdx}-${sIdx}`,
           title: `Module ${sIdx + 1}: ${t.title} Deep Dive`,
+          description: "Implementation details and patterns.",
           status: true,
           layout: "list",
+          ...AUDIT_FIELDS,
           materials: [
             {
               _id: `m-03-${tIdx}-${sIdx}-1`,
@@ -196,7 +350,16 @@ export const mockCurriculum: Curriculum = {
               category: "article",
               status: true,
               path: "https://react.dev/learn/render-and-commit",
-              difficulty: "medium"
+              difficulty: "medium",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
+              content: articleContent[t.slug] || `Visualizing the ${t.title} is key to understanding how data flows through your application.`,
+              reactions: {
+                fire: Math.floor(Math.random() * 50) + 1,
+                thumbsUp: Math.floor(Math.random() * 100) + 10,
+                thumbsDown: Math.floor(Math.random() * 5),
+                heart: Math.floor(Math.random() * 30) + 1
+              }
             },
             {
               _id: `m-03-${tIdx}-${sIdx}-2`,
@@ -205,7 +368,9 @@ export const mockCurriculum: Curriculum = {
               category: "video",
               status: true,
               path: "https://www.youtube.com/watch?v=SqcY0GlETPk",
-              difficulty: "hard"
+              difficulty: "hard",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
             },
             {
               _id: `m-03-${tIdx}-${sIdx}-3`,
@@ -214,24 +379,26 @@ export const mockCurriculum: Curriculum = {
               category: "problem",
               status: true,
               difficulty: "hard",
-              companies: ["Airbnb", "Meta", "Discord"]
+              topic: t.slug,
+              codeQuestion: `cq-03-${tIdx}-${sIdx}`,
+              companies: ["Airbnb", "Meta", "Discord"],
+              ...AUDIT_FIELDS,
             }
           ]
         }))
       }))
     },
 
-    // =========================================================
-    // SUBJECT 4: NODE.JS & BACKEND ARCHITECTURE
-    // =========================================================
     {
       _id: "subj-04",
       title: "Node.js & Backend Architecture",
       slug: "nodejs-backend",
       status: true,
       score: 4.7,
-      // Added Cover Image: Servers & Backend
       coverImgUrl: "https://images.unsplash.com/photo-1558494949-ef526b0042a0?auto=format&fit=crop&q=80&w=800",
+      code: "SUBJ-BE-04",
+      thumbnail: "https://images.unsplash.com/photo-1558494949-ef526b0042a0?auto=format&fit=crop&q=80&w=200",
+      ...AUDIT_FIELDS,
       topics: [
         { title: "Node.js Architecture (V8 & Libuv)", slug: "nodejs-internals" },
         { title: "Express.js Middleware Pattern", slug: "express-middleware" },
@@ -253,12 +420,19 @@ export const mockCurriculum: Curriculum = {
         ...t,
         status: true,
         order: tIdx + 1,
+        code: `TOPIC-04-${tIdx + 1}`,
         heading: "Server Excellence",
+        subheading: "Backend Patterns",
+        coverImgUrl: "https://images.unsplash.com/photo-1558494949-ef526b0042a0?auto=format&fit=crop&q=80&w=400",
+        description: "Robust server-side development practices.",
+        ...AUDIT_FIELDS,
         subtopics: Array.from({ length: 5 }).map((_, sIdx) => ({
           _id: `st-04-${tIdx}-${sIdx}`,
           title: `Server Logic ${sIdx + 1}`,
+          description: "System design and implementation.",
           status: true,
           layout: "list",
+          ...AUDIT_FIELDS,
           materials: [
             {
               _id: `m-04-${tIdx}-${sIdx}-1`,
@@ -266,7 +440,16 @@ export const mockCurriculum: Curriculum = {
               slug: "backend-flow",
               category: "article",
               status: true,
-              difficulty: "medium"
+              difficulty: "medium",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
+              content: articleContent[t.slug] || `Learn how to architect robust backend systems using ${t.title}.`,
+              reactions: {
+                fire: Math.floor(Math.random() * 50) + 1,
+                thumbsUp: Math.floor(Math.random() * 100) + 10,
+                thumbsDown: Math.floor(Math.random() * 5),
+                heart: Math.floor(Math.random() * 30) + 1
+              }
             },
             {
               _id: `m-04-${tIdx}-${sIdx}-2`,
@@ -275,7 +458,9 @@ export const mockCurriculum: Curriculum = {
               category: "video",
               status: true,
               path: "https://www.youtube.com/watch?v=-MTSQjw5DrM",
-              difficulty: "easy"
+              difficulty: "easy",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
             },
             {
               _id: `m-04-${tIdx}-${sIdx}-3`,
@@ -284,24 +469,26 @@ export const mockCurriculum: Curriculum = {
               category: "problem",
               status: true,
               difficulty: "hard",
-              companies: ["Uber", "Scalable Systems", "LinkedIn"]
+              topic: t.slug,
+              codeQuestion: `cq-04-${tIdx}-${sIdx}`,
+              companies: ["Uber", "Scalable Systems", "LinkedIn"],
+              ...AUDIT_FIELDS,
             }
           ]
         }))
       }))
     },
 
-    // =========================================================
-    // SUBJECT 5: DATABASE DESIGN & MANAGEMENT
-    // =========================================================
     {
       _id: "subj-05",
       title: "Database Design & Management",
       slug: "database-systems",
       status: true,
       score: 4.8,
-      // Added Cover Image: Data Center / Abstract Data
       coverImgUrl: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&q=80&w=800",
+      code: "SUBJ-DB-05",
+      thumbnail: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&q=80&w=200",
+      ...AUDIT_FIELDS,
       topics: [
         { title: "Relational DB Fundamentals (Postgres)", slug: "sql-fundamentals" },
         { title: "NoSQL Architectures (MongoDB)", slug: "mongodb-nosql" },
@@ -323,12 +510,19 @@ export const mockCurriculum: Curriculum = {
         ...t,
         status: true,
         order: tIdx + 1,
+        code: `TOPIC-05-${tIdx + 1}`,
         heading: "Persistence Layer",
+        subheading: "Data Modeling",
+        coverImgUrl: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&q=80&w=400",
+        description: "Designing efficient and scalable data storage.",
+        ...AUDIT_FIELDS,
         subtopics: Array.from({ length: 5 }).map((_, sIdx) => ({
           _id: `st-05-${tIdx}-${sIdx}`,
           title: `Data Structure ${sIdx + 1}`,
+          description: "Database internals and optimization.",
           status: true,
           layout: "grid",
+          ...AUDIT_FIELDS,
           materials: [
             {
               _id: `m-05-${tIdx}-${sIdx}-1`,
@@ -337,7 +531,9 @@ export const mockCurriculum: Curriculum = {
               category: "video",
               status: true,
               path: "https://www.youtube.com/watch?v=QpdhBUYk7Kk",
-              difficulty: "medium"
+              difficulty: "medium",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
             },
             {
               _id: `m-05-${tIdx}-${sIdx}-2`,
@@ -345,7 +541,16 @@ export const mockCurriculum: Curriculum = {
               slug: "schema-table",
               category: "article",
               status: true,
-              difficulty: "medium"
+              difficulty: "medium",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
+              content: articleContent[t.slug] || `Mastering ${t.title} is crucial for designing scalable and efficient data models.`,
+              reactions: {
+                fire: Math.floor(Math.random() * 50) + 1,
+                thumbsUp: Math.floor(Math.random() * 100) + 10,
+                thumbsDown: Math.floor(Math.random() * 5),
+                heart: Math.floor(Math.random() * 30) + 1
+              }
             },
             {
               _id: `m-05-${tIdx}-${sIdx}-3`,
@@ -354,24 +559,26 @@ export const mockCurriculum: Curriculum = {
               category: "problem",
               status: true,
               difficulty: "hard",
-              companies: ["Oracle", "Snowflake", "Citadel"]
+              topic: t.slug,
+              codeQuestion: `cq-05-${tIdx}-${sIdx}`,
+              companies: ["Oracle", "Snowflake", "Citadel"],
+              ...AUDIT_FIELDS,
             }
           ]
         }))
       }))
     },
 
-    // =========================================================
-    // SUBJECT 6: DEVOPS & CLOUD INFRASTRUCTURE
-    // =========================================================
     {
       _id: "subj-06",
       title: "DevOps & Cloud Infrastructure",
       slug: "devops-cloud",
       status: true,
       score: 4.8,
-      // Added Cover Image: Cloud Computing Concept
       coverImgUrl: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=800",
+      code: "SUBJ-OPS-06",
+      thumbnail: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=200",
+      ...AUDIT_FIELDS,
       topics: [
         { title: "Docker & Containerization", slug: "docker-containers" },
         { title: "Kubernetes Orchestration", slug: "kubernetes" },
@@ -393,12 +600,19 @@ export const mockCurriculum: Curriculum = {
         ...t,
         status: true,
         order: tIdx + 1,
+        code: `TOPIC-06-${tIdx + 1}`,
         heading: "Cloud Operations",
+        subheading: "Infrastructure",
+        coverImgUrl: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=400",
+        description: "Deploying and managing scalable applications.",
+        ...AUDIT_FIELDS,
         subtopics: Array.from({ length: 5 }).map((_, sIdx) => ({
           _id: `st-06-${tIdx}-${sIdx}`,
           title: `Infrastructure Layer ${sIdx + 1}`,
+          description: "Cloud setup and configuration.",
           status: true,
           layout: "list",
+          ...AUDIT_FIELDS,
           materials: [
             {
               _id: `m-06-${tIdx}-${sIdx}-1`,
@@ -407,7 +621,9 @@ export const mockCurriculum: Curriculum = {
               category: "video",
               status: true,
               path: "https://www.youtube.com/watch?v=fqMOX6JJhGo",
-              difficulty: "medium"
+              difficulty: "medium",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
             },
             {
               _id: `m-06-${tIdx}-${sIdx}-2`,
@@ -415,7 +631,16 @@ export const mockCurriculum: Curriculum = {
               slug: `blueprint-${t.slug}`,
               category: "article",
               status: true,
-              difficulty: "medium"
+              difficulty: "medium",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
+              content: articleContent[t.slug] || `A detailed blueprint and guide on setting up ${t.title} for production environments.`,
+              reactions: {
+                fire: Math.floor(Math.random() * 50) + 1,
+                thumbsUp: Math.floor(Math.random() * 100) + 10,
+                thumbsDown: Math.floor(Math.random() * 5),
+                heart: Math.floor(Math.random() * 30) + 1
+              }
             },
             {
               _id: `m-06-${tIdx}-${sIdx}-3`,
@@ -424,24 +649,26 @@ export const mockCurriculum: Curriculum = {
               category: "problem",
               status: true,
               difficulty: "hard",
-              companies: ["AWS", "DigitalOcean", "HashiCorp"]
+              topic: t.slug,
+              codeQuestion: `cq-06-${tIdx}-${sIdx}`,
+              companies: ["AWS", "DigitalOcean", "HashiCorp"],
+              ...AUDIT_FIELDS,
             }
           ]
         }))
       }))
     },
 
-    // =========================================================
-    // SUBJECT 7: DATA STRUCTURES & ALGORITHMS
-    // =========================================================
     {
       _id: "subj-07",
       title: "Data Structures & Algorithms",
       slug: "dsa-mastery",
       status: true,
       score: 5.0,
-      // Added Cover Image: Abstract Nodes/Connections
       coverImgUrl: "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=800",
+      code: "SUBJ-DSA-07",
+      thumbnail: "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=200",
+      ...AUDIT_FIELDS,
       topics: [
         { title: "Big O Analysis", slug: "big-o" },
         { title: "Arrays & Strings", slug: "arrays-strings" },
@@ -463,12 +690,19 @@ export const mockCurriculum: Curriculum = {
         ...t,
         status: true,
         order: tIdx + 1,
+        code: `TOPIC-07-${tIdx + 1}`,
         heading: "Algorithmic Thinking",
+        subheading: "CS Fundamentals",
+        coverImgUrl: "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=400",
+        description: "Mastering problem solving and algorithm optimization.",
+        ...AUDIT_FIELDS,
         subtopics: Array.from({ length: 5 }).map((_, sIdx) => ({
           _id: `st-07-${tIdx}-${sIdx}`,
           title: `Pattern ${sIdx + 1}`,
+          description: "Solving complex problems efficiently.",
           status: true,
           layout: "grid",
+          ...AUDIT_FIELDS,
           materials: [
             {
               _id: `m-07-${tIdx}-${sIdx}-1`,
@@ -477,7 +711,9 @@ export const mockCurriculum: Curriculum = {
               category: "video",
               status: true,
               path: "https://www.youtube.com/watch?v=RBSGKlAvoiM",
-              difficulty: "medium"
+              difficulty: "medium",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
             },
             {
               _id: `m-07-${tIdx}-${sIdx}-2`,
@@ -485,7 +721,16 @@ export const mockCurriculum: Curriculum = {
               slug: `sheet-${t.slug}`,
               category: "article",
               status: true,
-              difficulty: "easy"
+              difficulty: "easy",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
+              content: articleContent[t.slug] || `Essential cheat sheet and reference guide for mastering ${t.title}.`,
+              reactions: {
+                fire: Math.floor(Math.random() * 50) + 1,
+                thumbsUp: Math.floor(Math.random() * 100) + 10,
+                thumbsDown: Math.floor(Math.random() * 5),
+                heart: Math.floor(Math.random() * 30) + 1
+              }
             },
             {
               _id: `m-07-${tIdx}-${sIdx}-3`,
@@ -494,24 +739,26 @@ export const mockCurriculum: Curriculum = {
               category: "problem",
               status: true,
               difficulty: "hard",
-              companies: ["Google", "Facebook", "Amazon"]
+              topic: t.slug,
+              codeQuestion: `cq-07-${tIdx}-${sIdx}`,
+              companies: ["Google", "Facebook", "Amazon"],
+              ...AUDIT_FIELDS,
             }
           ]
         }))
       }))
     },
 
-    // =========================================================
-    // SUBJECT 8: SYSTEM DESIGN & SCALABILITY
-    // =========================================================
     {
       _id: "subj-08",
       title: "System Design & Scalability",
       slug: "system-design",
       status: true,
       score: 4.9,
-      // Added Cover Image: Blueprint / Architecture
       coverImgUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=800",
+      code: "SUBJ-SYS-08",
+      thumbnail: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=200",
+      ...AUDIT_FIELDS,
       topics: [
         { title: "Load Balancing Strategies", slug: "load-balancing" },
         { title: "Caching (CDN & In-Memory)", slug: "caching" },
@@ -533,12 +780,19 @@ export const mockCurriculum: Curriculum = {
         ...t,
         status: true,
         order: tIdx + 1,
+        code: `TOPIC-08-${tIdx + 1}`,
         heading: "High-Level Architecture",
+        subheading: "Scale",
+        coverImgUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=400",
+        description: "Designing systems that scale to millions of users.",
+        ...AUDIT_FIELDS,
         subtopics: Array.from({ length: 5 }).map((_, sIdx) => ({
           _id: `st-08-${tIdx}-${sIdx}`,
           title: `Architecture Component ${sIdx + 1}`,
+          description: "Distributed components and trade-offs.",
           status: true,
           layout: "list",
+          ...AUDIT_FIELDS,
           materials: [
             {
               _id: `m-08-${tIdx}-${sIdx}-1`,
@@ -547,7 +801,9 @@ export const mockCurriculum: Curriculum = {
               category: "video",
               status: true,
               path: "https://www.youtube.com/watch?v=i7S8_hI_SUI",
-              difficulty: "hard"
+              difficulty: "hard",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
             },
             {
               _id: `m-08-${tIdx}-${sIdx}-2`,
@@ -555,7 +811,16 @@ export const mockCurriculum: Curriculum = {
               slug: `whitepaper-${t.slug}`,
               category: "article",
               status: true,
-              difficulty: "hard"
+              difficulty: "hard",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
+              content: articleContent[t.slug] || `In-depth analysis and whitepaper discussion on scaling systems using ${t.title}.`,
+              reactions: {
+                fire: Math.floor(Math.random() * 50) + 1,
+                thumbsUp: Math.floor(Math.random() * 100) + 10,
+                thumbsDown: Math.floor(Math.random() * 5),
+                heart: Math.floor(Math.random() * 30) + 1
+              }
             },
             {
               _id: `m-08-${tIdx}-${sIdx}-3`,
@@ -564,24 +829,26 @@ export const mockCurriculum: Curriculum = {
               category: "problem",
               status: true,
               difficulty: "hard",
-              companies: ["Netflix", "Twitter", "Slack"]
+              topic: t.slug,
+              codeQuestion: `cq-08-${tIdx}-${sIdx}`,
+              companies: ["Netflix", "Twitter", "Slack"],
+              ...AUDIT_FIELDS,
             }
           ]
         }))
       }))
     },
 
-    // =========================================================
-    // SUBJECT 9: TESTING, QA & CYBERSECURITY
-    // =========================================================
     {
       _id: "subj-09",
       title: "Testing, QA & Cybersecurity",
       slug: "testing-security",
       status: true,
       score: 4.7,
-      // Added Cover Image: Security/Matrix
       coverImgUrl: "https://images.unsplash.com/photo-1563206767-5b1d972b9fb1?auto=format&fit=crop&q=80&w=800",
+      code: "SUBJ-SEC-09",
+      thumbnail: "https://images.unsplash.com/photo-1563206767-5b1d972b9fb1?auto=format&fit=crop&q=80&w=200",
+      ...AUDIT_FIELDS,
       topics: [
         { title: "Unit Testing with Jest", slug: "unit-testing" },
         { title: "Integration Testing Strategies", slug: "integration-testing" },
@@ -603,12 +870,19 @@ export const mockCurriculum: Curriculum = {
         ...t,
         status: true,
         order: tIdx + 1,
+        code: `TOPIC-09-${tIdx + 1}`,
         heading: "Quality & Protection",
+        subheading: "Security",
+        coverImgUrl: "https://images.unsplash.com/photo-1563206767-5b1d972b9fb1?auto=format&fit=crop&q=80&w=400",
+        description: "Ensuring application reliability and security.",
+        ...AUDIT_FIELDS,
         subtopics: Array.from({ length: 5 }).map((_, sIdx) => ({
           _id: `st-09-${tIdx}-${sIdx}`,
           title: `Security Module ${sIdx + 1}`,
+          description: "Testing frameworks and security protocols.",
           status: true,
           layout: "list",
+          ...AUDIT_FIELDS,
           materials: [
             {
               _id: `m-09-${tIdx}-${sIdx}-1`,
@@ -617,7 +891,9 @@ export const mockCurriculum: Curriculum = {
               category: "video",
               status: true,
               path: "https://www.youtube.com/watch?v=7r4xVDI2vho",
-              difficulty: "hard"
+              difficulty: "hard",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
             },
             {
               _id: `m-09-${tIdx}-${sIdx}-2`,
@@ -626,7 +902,10 @@ export const mockCurriculum: Curriculum = {
               category: "problem",
               status: true,
               difficulty: "medium",
-              companies: ["CrowdStrike", "Okta", "Cloudflare"]
+              topic: t.slug,
+              codeQuestion: `cq-09-${tIdx}-${sIdx}`,
+              companies: ["CrowdStrike", "Okta", "Cloudflare"],
+              ...AUDIT_FIELDS,
             },
             {
               _id: `m-09-${tIdx}-${sIdx}-3`,
@@ -634,24 +913,32 @@ export const mockCurriculum: Curriculum = {
               slug: `art-${t.slug}`,
               category: "article",
               status: true,
-              difficulty: "easy"
+              difficulty: "easy",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
+              content: articleContent[t.slug] || `Industry standard best practices and security measures for ${t.title}.`,
+              reactions: {
+                fire: Math.floor(Math.random() * 50) + 1,
+                thumbsUp: Math.floor(Math.random() * 100) + 10,
+                thumbsDown: Math.floor(Math.random() * 5),
+                heart: Math.floor(Math.random() * 30) + 1
+              }
             }
           ]
         }))
       }))
     },
 
-    // =========================================================
-    // SUBJECT 10: UI/UX & PRODUCT DESIGN FOR ENGINEERS
-    // =========================================================
     {
       _id: "subj-10",
       title: "UI/UX & Product Design for Engineers",
       slug: "ui-ux-design",
       status: true,
       score: 4.6,
-      // Added Cover Image: Design Tools/Colors
       coverImgUrl: "https://images.unsplash.com/photo-1586717791821-3f44a5638d4f?auto=format&fit=crop&q=80&w=800",
+      code: "SUBJ-UI-10",
+      thumbnail: "https://images.unsplash.com/photo-1586717791821-3f44a5638d4f?auto=format&fit=crop&q=80&w=200",
+      ...AUDIT_FIELDS,
       topics: [
         { title: "Design Thinking Methodology", slug: "design-thinking" },
         { title: "Typography & Visual Hierarchy", slug: "typography-hierarchy" },
@@ -673,12 +960,19 @@ export const mockCurriculum: Curriculum = {
         ...t,
         status: true,
         order: tIdx + 1,
+        code: `TOPIC-10-${tIdx + 1}`,
         heading: "User-Centric Design",
+        subheading: "Product",
+        coverImgUrl: "https://images.unsplash.com/photo-1586717791821-3f44a5638d4f?auto=format&fit=crop&q=80&w=400",
+        description: "Bridging the gap between design and engineering.",
+        ...AUDIT_FIELDS,
         subtopics: Array.from({ length: 5 }).map((_, sIdx) => ({
           _id: `st-10-${tIdx}-${sIdx}`,
           title: `Creative Module ${sIdx + 1}`,
+          description: "Practical design implementation.",
           status: true,
           layout: "grid",
+          ...AUDIT_FIELDS,
           materials: [
             {
               _id: `m-10-${tIdx}-${sIdx}-1`,
@@ -687,7 +981,9 @@ export const mockCurriculum: Curriculum = {
               category: "video",
               status: true,
               path: "https://www.youtube.com/watch?v=c9Wg6WMLAF4",
-              difficulty: "easy"
+              difficulty: "easy",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
             },
             {
               _id: `m-10-${tIdx}-${sIdx}-2`,
@@ -695,7 +991,16 @@ export const mockCurriculum: Curriculum = {
               slug: `guide-${t.slug}`,
               category: "article",
               status: true,
-              difficulty: "medium"
+              difficulty: "medium",
+              topic: t.slug,
+              ...AUDIT_FIELDS,
+              content: articleContent[t.slug] || `A comprehensive guide to understanding and implementing ${t.title}.`,
+              reactions: {
+                fire: Math.floor(Math.random() * 50) + 1,
+                thumbsUp: Math.floor(Math.random() * 100) + 10,
+                thumbsDown: Math.floor(Math.random() * 5),
+                heart: Math.floor(Math.random() * 30) + 1
+              }
             },
             {
               _id: `m-10-${tIdx}-${sIdx}-3`,
@@ -704,7 +1009,10 @@ export const mockCurriculum: Curriculum = {
               category: "problem",
               status: true,
               difficulty: "medium",
-              companies: ["Figma", "Canva", "Adobe"]
+              topic: t.slug,
+              codeQuestion: `cq-10-${tIdx}-${sIdx}`,
+              companies: ["Figma", "Canva", "Adobe"],
+              ...AUDIT_FIELDS,
             }
           ]
         }))

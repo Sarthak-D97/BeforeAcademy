@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
-import { ThemeContextProvider } from '../context/ThemeContext'; // Import our new provider
-
+import { ThemeContextProvider } from '../context/ThemeContext'; 
 export const metadata: Metadata = {
   title: 'Professional Curriculum',
   description: 'A data-driven curriculum renderer',
@@ -16,7 +15,6 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AppRouterCacheProvider>
-          {/* Use our new Context Provider instead of the direct ThemeProvider */}
           <ThemeContextProvider>
             {children}
           </ThemeContextProvider>

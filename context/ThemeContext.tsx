@@ -1,5 +1,4 @@
 'use client';
-
 import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,16 +12,14 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  mode: 'dark', // Default to dark for that "pro" feel
+  mode: 'dark', 
   toggleTheme: () => {},
 });
 
 export const useThemeContext = () => useContext(ThemeContext);
 
 export const ThemeContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const [mode, setMode] = useState<ThemeMode>('dark'); // Default state
-
-  // 1. Load preference from LocalStorage on mount
+  const [mode, setMode] = useState<ThemeMode>('dark');
   useEffect(() => {
     const savedMode = localStorage.getItem('themeMode') as ThemeMode;
     if (savedMode) {
@@ -33,14 +30,11 @@ export const ThemeContextProvider = ({ children }: { children: React.ReactNode }
   const toggleTheme = () => {
     setMode((prevMode) => {
       const newMode = prevMode === 'light' ? 'dark' : 'light';
-      localStorage.setItem('themeMode', newMode); // Save to storage
+      localStorage.setItem('themeMode', newMode);
       return newMode;
     });
   };
-
-  // Generate the MUI theme based on current mode
   const theme = useMemo(() => getTheme(mode), [mode]);
-
   return (
     <ThemeContext.Provider value={{ mode, toggleTheme }}>
       <ThemeProvider theme={theme}>

@@ -4,57 +4,69 @@ interface BaseEntity {
   status: boolean;
   createdAt?: string;
   updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string; 
+}
+export type MaterialCategory = 'video' | 'article' | 'problem' | string;
+export type LayoutType = 'list' | 'grid' | string;
+export type DifficultyLevel = 'easy' | 'medium' | 'hard' | string;
+export interface ReactionCounts {
+  fire: number;
+  thumbsUp: number;
+  thumbsDown: number;
+  heart: number;
 }
 
-export type MaterialCategory = 'video' | 'article' | 'problem' | string;
-
 export interface Materials extends BaseEntity {
-  category: MaterialCategory;
   slug: string;
-  difficulty?: 'easy' | 'medium' | 'hard' | string;
+  category: MaterialCategory;
+  description?: string; 
+  content?: string;    
+  path?: string; 
+  difficulty?: DifficultyLevel;
   companies?: string[];
-  path?: string;
-  topic?: string;
-  answer?: string;
+  answer?: string; 
   solution?: string;
-  snippet?: string;
+  topic?: string;
+  snippet?: string;     
   codeQuestion?: string;
+  reactions?: ReactionCounts;
 }
 
 export interface Curriculum_Subtopics extends BaseEntity {
   description?: string;
-  layout?: 'list' | 'grid' | string;
+  layout?: LayoutType;
   materials: Materials[]; 
 }
 
 export interface Curriculum_Topics extends BaseEntity {
-  description?: string;
   slug: string;
-  code?: string;
-  order?: number;
+  description?: string;
   heading?: string;
   subheading?: string;
+  order?: number;
   coverImgUrl?: string;
+  code?: string;
   subtopics: Curriculum_Subtopics[];
 }
 
 export interface Curriculum_Subjects extends BaseEntity {
-  description?: string;
   slug: string;
-  code?: string;
+  description?: string;
   coverImgUrl?: string;
   thumbnail?: string;
-  score?: number;
+  score?: number;    
+  code?: string;
   topics: Curriculum_Topics[];
 }
 
 export interface Curriculum extends BaseEntity {
-  description: string;
   slug: string;
-  code?: string;
+  description: string;
   coverImgUrl?: string;
   thumbnail?: string;
   score?: number;
+  code?: string;
   snippet?: string;
   subjects: Curriculum_Subjects[];
 }

@@ -1,7 +1,5 @@
 'use client';
 import { createTheme } from '@mui/material/styles';
-
-// 1. Define the Font Family
 const snPro = "'SN Pro', sans-serif";
 
 export const getTheme = (mode: 'light' | 'dark') => {
@@ -9,20 +7,19 @@ export const getTheme = (mode: 'light' | 'dark') => {
     palette: {
       mode,
       primary: {
-        main: '#328af1', // "Laracasts Blue"
+        main: '#328af1',
       },
       secondary: {
-        main: '#ec4899', // Pink accent
+        main: '#ec4899',
       },
       ...(mode === 'dark' ? {
-        // PROFESSIONAL DARK MODE
         background: {
-          default: '#0f172a', // Deep Navy (Slate 950)
-          paper: '#1e293b',   // Lighter Navy (Slate 800)
+          default: '#0f172a',
+          paper: '#1e293b',  
         },
         text: {
-          primary: '#f8fafc', // Slate 50
-          secondary: '#94a3b8', // Slate 400
+          primary: '#f8fafc', 
+          secondary: '#94a3b8', 
         },
         divider: 'rgba(148, 163, 184, 0.12)',
         action: {
@@ -30,7 +27,6 @@ export const getTheme = (mode: 'light' | 'dark') => {
           selected: 'rgba(50, 138, 241, 0.16)',
         }
       } : {
-        // CLEAN LIGHT MODE
         background: {
           default: '#f8fafc',
           paper: '#ffffff',
@@ -42,17 +38,14 @@ export const getTheme = (mode: 'light' | 'dark') => {
       }),
     },
     typography: {
-      // 2. Apply SN Pro Globally
       fontFamily: snPro,
-      
-      // Fine-tune headings if needed
       h1: { fontWeight: 700, letterSpacing: '-0.02em' },
       h2: { fontWeight: 700, letterSpacing: '-0.01em' },
       h3: { fontWeight: 600 },
       h4: { fontWeight: 600 },
       h5: { fontWeight: 600 },
       h6: { fontWeight: 600 },
-      button: { fontWeight: 600, textTransform: 'none' }, // Modern buttons
+      button: { fontWeight: 600, textTransform: 'none' },
     },
     components: {
       MuiPaper: {

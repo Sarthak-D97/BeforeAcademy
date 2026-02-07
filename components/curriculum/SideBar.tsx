@@ -1,5 +1,15 @@
 'use client';
-import { Paper, Box, List, ListItemButton, ListItemIcon, ListItemText, Typography, Avatar, useTheme } from '@mui/material';
+import { 
+  Paper, 
+  Box, 
+  List, 
+  ListItemButton, 
+  ListItemIcon, 
+  ListItemText, 
+  Typography, 
+  Avatar 
+} from '@mui/material';
+
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import ArticleIcon from '@mui/icons-material/Article';
 import CodeIcon from '@mui/icons-material/Code';
@@ -13,14 +23,13 @@ const getIcon = (type: string) => {
 
 interface Props {
   mode: 'subjects' | 'topics';
-  items: any[];
+  items: (Curriculum_Subjects | Curriculum_Topics)[]; 
   activeId?: string;
   onSelect: (item: any) => void;
   title: string;
 }
 
 export default function Sidebar({ mode, items, activeId, onSelect, title }: Props) {
-  const theme = useTheme();
 
   return (
     <Paper 
@@ -29,11 +38,11 @@ export default function Sidebar({ mode, items, activeId, onSelect, title }: Prop
         width: { xs: '100%', md: 320 }, 
         flexShrink: 0,
         borderRight: '1px solid', 
-        borderColor: 'divider', // Uses theme divider color
+        borderColor: 'divider',
         height: '100%',
         display: 'flex', 
         flexDirection: 'column',
-        bgcolor: 'background.paper', // Dark in dark mode, White in light mode
+        bgcolor: 'background.paper',
         borderRadius: 0
       }}
     >
@@ -70,15 +79,13 @@ export default function Sidebar({ mode, items, activeId, onSelect, title }: Prop
                 </ListItemButton>
               );
             }
-
             return (
               <Box key={item._id}>
-                {/* Topic Header - Replaced Grey with Transparent/Divider */}
                 <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
                   <Typography variant="caption" fontWeight="bold" color="primary">{item.title.toUpperCase()}</Typography>
                 </Box>
-                {item.subtopics.map((sub: any) => (
-                  sub.materials.map((mat: Materials) => (
+                {item.subtopics?.map((sub: any) => (
+                  sub.materials?.map((mat: Materials) => (
                     <ListItemButton 
                       key={mat._id} 
                       selected={mat._id === activeId} 
