@@ -5,11 +5,24 @@ interface BaseEntity {
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;
-  updatedBy?: string; 
+  updatedBy?: string;
 }
+
 export type MaterialCategory = 'video' | 'article' | 'problem' | string;
 export type LayoutType = 'list' | 'grid' | string;
 export type DifficultyLevel = 'easy' | 'medium' | 'hard' | string;
+export type LanguageCode = 'en' | 'hi' | string; 
+
+export interface Video {
+  _id: string;
+  lang: LanguageCode;
+  res: string;
+  vimeoId: string;
+  vimeoHls?: string; 
+  videoId?: string;
+  pwVideoMPD?: string;
+}
+
 export interface ReactionCounts {
   fire: number;
   thumbsUp: number;
@@ -17,19 +30,27 @@ export interface ReactionCounts {
   heart: number;
 }
 
+
 export interface Materials extends BaseEntity {
   slug: string;
   category: MaterialCategory;
-  description?: string; 
-  content?: string;    
+
+  description?: string;
+  content?: string;
   path?: string; 
+
+  video?: Video[]; 
+  hint?: Video[];
+
   difficulty?: DifficultyLevel;
   companies?: string[];
-  answer?: string; 
+  answer?: string;
   solution?: string;
+
   topic?: string;
   snippet?: string;     
   codeQuestion?: string;
+
   reactions?: ReactionCounts;
 }
 
@@ -55,7 +76,7 @@ export interface Curriculum_Subjects extends BaseEntity {
   description?: string;
   coverImgUrl?: string;
   thumbnail?: string;
-  score?: number;    
+  score?: number;
   code?: string;
   topics: Curriculum_Topics[];
 }

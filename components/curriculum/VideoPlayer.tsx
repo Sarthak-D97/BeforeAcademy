@@ -1,0 +1,119 @@
+'use client';
+
+import React, { useEffect, useRef, useState } from 'react';
+import { Box, CircularProgress, Typography } from '@mui/material';
+import Script from 'next/script';
+
+declare global {
+  interface Window {
+    Vimeo?: any;
+    bridge?: {
+      dispatch: (type: string, payload?: any) => void;
+      error: (data: any) => void;
+    };
+  }
+}
+
+const NativeActionType = {
+  ANALYTICS: 'ANALYTICS',
+  CLOSE: 'CLOSE',
+  RETRY: 'RETRY',
+  LOADED: 'LOADED',
+  PLAY: 'PLAY',
+  PAUSE: 'PAUSE',
+  THRESHOLD: 'THRESHOLD',
+  COMPLETED: 'COMPLETED',
+};
+
+interface Props {
+  vimeoId: string;
+  autoplay?: number;
+  color?: string; 
+}
+
+export default function VideoPlayer({ vimeoId, autoplay = 0, color = 'FF7739' }: Props) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<any>(null);
+  const [isSdkLoaded, setIsSdkLoaded] = useState(false);
+  const thresholdPct = 0.8;
+
+  const sendAnalytics = (eventName: string) => {
+    if (window.bridge) {
+      window.bridge.dispatch(NativeActionType.ANALYTICS, eventName);
+    } else {
+      console.log(`[Mock Bridge] Analytics: ${eventName}`);
+    }
+  };
+
+  const bridgeEvent = {
+    loaded: (data: any) => {
+      sendAnalytics('WVP_LOADED');
+      if (window.bridge) window.bridge.dispatch(NativeActionType.LOADED, JSON.stringify(data));
+    },
+    play: (data: any) => {
+      if (window.bridge) window.bridge.dispatch(NativeActionType.PLAY, JSON.stringify(data));
+    },
+    pause: (data: any) => {
+      if (window.bridge) window.bridge.dispatch(NativeActionType.PAUSE, JSON.stringify(data));
+    },
+    threshold: (data: any) => {
+      if (window.bridge) window.bridge.dispatch(NativeActionType.THRESHOLD, JSON.stringify(data));
+    },
+    completed: (data: any) => {
+      sendAnalytics('WVP_COMPLETED');
+      if (window.bridge) window.bridge.dispatch(NativeActionType.COMPLETED, JSON.stringify(data));
+    },
+    error: (data: any) => {
+      sendAnalytics('WVP_ERROR');
+      if (window.bridge) window.bridge.error(data);
+    },
+  };
+
+  useEffect(() => {
+    if (!isSdkLoaded || !containerRef.current || !window.Vimeo) return;
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://player.vimeo.com/video/${vimeoId}?autoplay=${autoplay}&color=${color}&badge=0&autopause=0&player_id=0&app_id=58479`;
+    iframe.style.border = '0';
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.position = 'absolute';
+    iframe.style.top = '0';
+    iframe.style.left = '0';
+    iframe.allow = "autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media";
+    containerRef.current.innerHTML = '';
+    containerRef.current.appendChild(iframe);
+    const player = new window.Vimeo.Player(iframe);
+    player.setLoop(false);
+    player.on('loaded', (data: any) => bridgeEvent.loaded(data));
+    player.on('play', (data: any) => bridgeEvent.play(data));
+    player.on('pause', (data: any) => bridgeEvent.pause(data));
+    player.on('timeupdate', (data: any) => {
+      if (data && data.percent && data.percent >= thresholdPct) {
+        bridgeEvent.threshold(data);
+      }
+    });
+    player.on('ended', (data: any) => bridgeEvent.completed(data));
+    player.on('error', (data: any) => bridgeEvent.error(data));
+  }, [isSdkLoaded, vimeoId]);
+
+  return (
+    <Box sx={{ width: '100%', borderRadius: 4, overflow: 'hidden', bgcolor: 'black', boxShadow: 3 }}>
+      <Script 
+        src="https://player.vimeo.com/api/player.js" 
+        onLoad={() => setIsSdkLoaded(true)}
+      />
+      <Box sx={{ position: 'relative', pt: '56.25%' }}>
+        {!isSdkLoaded && (
+          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'white' }}>
+            <CircularProgress color="inherit" />
+          </Box>
+        )}
+        <div 
+          ref={containerRef} 
+          className="video-wrapper"
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+        />
+      </Box>
+    </Box>
+  );
+}

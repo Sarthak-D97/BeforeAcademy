@@ -1,9 +1,10 @@
 import { Curriculum } from '../types/curriculum';
+
 const AUDIT_FIELDS = {
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
-  createdBy: "user-admin-001",  
-  updatedBy: "user-admin-001",   
+  createdBy: "user-admin-001",
+  updatedBy: "user-admin-001",
 };
 
 const articleContent: Record<string, string> = {
@@ -158,6 +159,27 @@ export const mockCurriculum: Curriculum = {
           layout: "list",
           ...AUDIT_FIELDS,
           materials: [
+            {
+              _id: `m-01-${tIdx}-${sIdx}-0-new`,
+              title: "Golden Gate Bridge (Vimeo)",
+              slug: "golden-gate-video",
+              category: "video",
+              status: true,
+              difficulty: "easy",
+              topic: t.slug,
+              video: [
+                {
+                  _id: "vid-gg-001",
+                  lang: "en",
+                  res: "1080p",
+                  vimeoId: "1156920463",
+                  vimeoHls: "",
+                  videoId: "gg-bridge-main",
+                  pwVideoMPD: ""
+                }
+              ],
+              ...AUDIT_FIELDS
+            },
             {
               _id: `m-01-${tIdx}-${sIdx}-1`,
               title: `Video Guide: Mastering ${t.title}`,

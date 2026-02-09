@@ -1,35 +1,62 @@
 'use client';
+
+import React, { useState, useEffect } from 'react';
 import { 
-  Paper, 
-  Box, 
-  List, 
-  ListItemButton, 
-  ListItemIcon, 
-  ListItemText, 
-  Typography, 
-  Avatar 
+  Paper, Box, List, ListItemButton, ListItemIcon, ListItemText, 
+  Typography, Collapse, Divider, Tooltip 
 } from '@mui/material';
 
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import ArticleIcon from '@mui/icons-material/Article';
 import CodeIcon from '@mui/icons-material/Code';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import SchoolIcon from '@mui/icons-material/School';
+import FolderIcon from '@mui/icons-material/Folder';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+
 import { Curriculum_Subjects, Curriculum_Topics, Materials } from '../../types/curriculum';
 
 const getIcon = (type: string) => {
-  if (type === 'video') return <PlayCircleIcon fontSize="small" />;
-  if (type === 'problem') return <CodeIcon fontSize="small" />;
-  return <ArticleIcon fontSize="small" />;
+  if (type === 'video') return <PlayCircleIcon fontSize="small" sx={{ color: 'secondary.main' }} />;
+  if (type === 'problem') return <CodeIcon fontSize="small" sx={{ color: 'warning.main' }} />;
+  return <ArticleIcon fontSize="small" sx={{ color: 'primary.main' }} />;
 };
 
 interface Props {
-  mode: 'subjects' | 'topics';
-  items: (Curriculum_Subjects | Curriculum_Topics)[]; 
-  activeId?: string;
-  onSelect: (item: any) => void;
-  title: string;
+  subjects: Curriculum_Subjects[];
+  activeSubjectId?: string;
+  activeMaterialId?: string;
+  onMaterialSelect: (m: Materials) => void;
+  onTopicSelect: (t: Curriculum_Topics) => void; 
 }
 
-export default function Sidebar({ mode, items, activeId, onSelect, title }: Props) {
+export default function Sidebar({ 
+  subjects, 
+  activeSubjectId, 
+  activeMaterialId, 
+  onMaterialSelect,
+  onTopicSelect
+}: Props) {
+  const [expandedSubject, setExpandedSubject] = useState<string | null>(null);
+  const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (activeSubjectId) setExpandedSubject(activeSubjectId);
+  }, [activeSubjectId]);
+
+  const handleMaterialClick = (mat: Materials) => {
+    if (mat.category === 'article' || mat.category === 'problem') {
+      window.open(`/material/${mat.slug}`, '_blank');
+    } else {
+      onMaterialSelect(mat);
+    }
+  };
+
+  const handleTopicClick = (topic: Curriculum_Topics) => {
+    setExpandedTopic(expandedTopic === topic._id ? null : topic._id);
+    onTopicSelect(topic);
+  };
 
   return (
     <Paper 
@@ -48,62 +75,102 @@ export default function Sidebar({ mode, items, activeId, onSelect, title }: Prop
     >
       <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'action.hover' }}>
         <Typography variant="overline" fontWeight="900" color="text.secondary" letterSpacing={1.2}>
-          {title}
+          Course Content
         </Typography>
       </Box>
 
       <Box sx={{ overflowY: 'auto', flexGrow: 1 }}>
         <List disablePadding>
-          {items.map((item: any) => {
-            const isActive = item._id === activeId;
-            
-            if (mode === 'subjects') {
-              return (
-                <ListItemButton 
-                  key={item._id} 
-                  selected={isActive} 
-                  onClick={() => onSelect(item)} 
-                  sx={{ 
-                    py: 2, 
-                    borderLeft: isActive ? '4px solid' : '4px solid transparent', 
-                    borderColor: 'primary.main',
-                    '&.Mui-selected': { bgcolor: 'action.selected' } 
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 40 }}>
-                    <Avatar sx={{ width: 28, height: 28, fontSize: '0.75rem', bgcolor: isActive ? 'primary.main' : 'action.disabled', color: '#fff' }}>
-                      {item.title[0]}
-                    </Avatar>
-                  </ListItemIcon>
-                  <ListItemText primary={item.title} primaryTypographyProps={{ fontWeight: isActive ? 700 : 500 }} />
-                </ListItemButton>
-              );
-            }
+          {subjects.map((subject) => {
+            const isSubExpanded = expandedSubject === subject._id;
+
             return (
-              <Box key={item._id}>
-                <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
-                  <Typography variant="caption" fontWeight="bold" color="primary">{item.title.toUpperCase()}</Typography>
-                </Box>
-                {item.subtopics?.map((sub: any) => (
-                  sub.materials?.map((mat: Materials) => (
-                    <ListItemButton 
-                      key={mat._id} 
-                      selected={mat._id === activeId} 
-                      onClick={() => onSelect(mat)}
-                      sx={{ 
-                        pl: 4, py: 1.5, 
-                        borderLeft: mat._id === activeId ? '3px solid' : '3px solid transparent', 
-                        borderColor: 'primary.main',
-                        '&.Mui-selected': { bgcolor: 'action.selected' }
-                      }}
-                    >
-                      <ListItemIcon sx={{ minWidth: 30, color: mat._id === activeId ? 'primary.main' : 'text.secondary' }}>
-                        {getIcon(mat.category)}
-                      </ListItemIcon>
-                      <ListItemText primary={mat.title} primaryTypographyProps={{ fontSize: '0.85rem', noWrap: true }} />
-                    </ListItemButton>
-                  ))
-                ))}
+              <Box key={subject._id}>
+                <ListItemButton 
+                  onClick={() => setExpandedSubject(isSubExpanded ? null : subject._id)}
+                  sx={{ py: 1.5, borderLeft: isSubExpanded ? '4px solid' : '4px solid transparent', borderColor: 'primary.main' }}
+                >
+                  <ListItemIcon sx={{ minWidth: 35 }}>
+                    <SchoolIcon fontSize="small" color={isSubExpanded ? "primary" : "action"} />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary={subject.title} 
+                    primaryTypographyProps={{ fontWeight: isSubExpanded ? 800 : 500, fontSize: '0.9rem' }} 
+                  />
+                  {isSubExpanded ? <ExpandLess /> : <ExpandMore />}
+                </ListItemButton>
+
+                <Collapse in={isSubExpanded} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding sx={{ pl: 1 }}>
+                    {subject.topics.map((topic) => {
+                      const isTopicExpanded = expandedTopic === topic._id;
+
+                      return (
+                        <Box key={topic._id}>
+                          <ListItemButton 
+                            onClick={() => handleTopicClick(topic)}
+                            sx={{ py: 1, pl: 2 }}
+                          >
+                            <ListItemIcon sx={{ minWidth: 30 }}>
+                              <FolderIcon fontSize="inherit" color={isTopicExpanded ? "primary" : "disabled"} />
+                            </ListItemIcon>
+                            <ListItemText 
+                              primary={topic.title} 
+                              primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: isTopicExpanded ? 700 : 400 }} 
+                            />
+                            {isTopicExpanded ? <ExpandLess fontSize="inherit" /> : <ExpandMore fontSize="inherit" />}
+                          </ListItemButton>
+
+                          <Collapse in={isTopicExpanded} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding sx={{ bgcolor: 'action.hover', ml: 2 }}>
+                              {topic.subtopics?.map((sub) => (
+                                <Box key={sub._id}>
+                                  <Box sx={{ px: 3, py: 0.5 }}>
+                                    <Typography variant="caption" fontWeight="900" color="text.secondary" sx={{ textTransform: 'uppercase', fontSize: '0.6rem' }}>
+                                      {sub.title}
+                                    </Typography>
+                                  </Box>
+                                  {sub.materials?.map((mat) => {
+                                    const isExternal = mat.category === 'article' || mat.category === 'problem';
+                                    
+                                    return (
+                                      <ListItemButton 
+                                        key={mat._id} 
+                                        selected={mat._id === activeMaterialId} 
+                                        onClick={() => handleMaterialClick(mat)}
+                                        sx={{ pl: 4, py: 0.8 }}
+                                      >
+                                        <ListItemIcon sx={{ minWidth: 25 }}>
+                                          {getIcon(mat.category)}
+                                        </ListItemIcon>
+                                        <ListItemText 
+                                          primary={mat.title} 
+                                          primaryTypographyProps={{ 
+                                            fontSize: '0.75rem', 
+                                            fontWeight: mat._id === activeMaterialId ? 700 : 400,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 0.5
+                                          }} 
+                                        />
+                                        {isExternal && (
+                                          <Tooltip title="Opens in new window" placement="right">
+                                            <OpenInNewIcon sx={{ fontSize: '0.7rem', opacity: 0.5, ml: 0.5 }} />
+                                          </Tooltip>
+                                        )}
+                                      </ListItemButton>
+                                    );
+                                  })}
+                                </Box>
+                              ))}
+                            </List>
+                          </Collapse>
+                        </Box>
+                      );
+                    })}
+                  </List>
+                </Collapse>
+                <Divider />
               </Box>
             );
           })}
