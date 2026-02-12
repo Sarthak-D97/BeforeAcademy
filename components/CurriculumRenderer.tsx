@@ -23,7 +23,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import SchoolIcon from '@mui/icons-material/School';
 import MenuIcon from '@mui/icons-material/Menu';
 
 import { Curriculum, Curriculum_Subjects, Curriculum_Topics, Materials } from '../types/curriculum';
@@ -131,7 +130,7 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
               <Container maxWidth="xl">
                 <Toolbar disableGutters sx={{ minHeight: { xs: 56, sm: 64 } }}>
                    <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Image src="/logo1.png" alt="Logo" width={32} height={32} style={{ height: 'auto' }} />
+                    <Image src="/logo.svg" alt="Logo" width={32} height={32} style={{ height: 'auto' }} />
                     <Typography 
                       variant="h4" 
                       sx={{ 
@@ -140,7 +139,7 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
                         fontSize: { xs: '1.4rem', sm: '1.8rem' } 
                       }}
                     >
-                      BeforeAcademy
+                      AfterAcademy
                     </Typography>
                   </Box>
                   <TopBarActions />
@@ -168,7 +167,6 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
               />
             </Box>
 
-            {/* Mobile Sidebar Drawer */}
             <Drawer
               variant="temporary"
               open={mobileOpen}
