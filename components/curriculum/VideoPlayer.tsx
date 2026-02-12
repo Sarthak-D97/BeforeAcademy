@@ -97,22 +97,29 @@ export default function VideoPlayer({ vimeoId, autoplay = 0, color = 'FF7739' }:
   }, [isSdkLoaded, vimeoId]);
 
   return (
-    <Box sx={{ width: '100%', borderRadius: 4, overflow: 'hidden', bgcolor: 'black', boxShadow: 3 }}>
+    <Box sx={{ width: '100%', borderRadius: { xs: 2, md: 4 }, overflow: 'hidden', bgcolor: 'black', boxShadow: 3 }}>
       <Script 
         src="https://player.vimeo.com/api/player.js" 
         onLoad={() => setIsSdkLoaded(true)}
       />
-      <Box sx={{ position: 'relative', pt: '56.25%' }}>
+      <Box 
+        ref={containerRef} 
+        sx={{ 
+          position: 'relative', 
+          pt: '56.25%', // 16:9 Aspect Ratio
+          bgcolor: '#000',
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
         {!isSdkLoaded && (
-          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'white' }}>
-            <CircularProgress color="inherit" />
+          <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <CircularProgress color="primary" />
+            <Typography variant="caption" sx={{ mt: 1, color: 'grey.500' }}>Initializing secure player...</Typography>
           </Box>
         )}
-        <div 
-          ref={containerRef} 
-          className="video-wrapper"
-          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-        />
       </Box>
     </Box>
   );

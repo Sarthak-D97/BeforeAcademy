@@ -64,7 +64,7 @@ export default function Sidebar({
       sx={{ 
         width: { xs: '100%', md: 320 }, 
         flexShrink: 0,
-        borderRight: '1px solid', 
+        borderRight: { xs: 'none', md: '1px solid' }, 
         borderColor: 'divider',
         height: '100%',
         display: 'flex', 
@@ -73,7 +73,7 @@ export default function Sidebar({
         borderRadius: 0
       }}
     >
-      <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'action.hover' }}>
+      <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'action.hover', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Typography variant="overline" fontWeight="900" color="text.secondary" letterSpacing={1.2}>
           Course Content
         </Typography>
@@ -95,7 +95,7 @@ export default function Sidebar({
                   </ListItemIcon>
                   <ListItemText 
                     primary={subject.title} 
-                    primaryTypographyProps={{ fontWeight: isSubExpanded ? 800 : 500, fontSize: '0.9rem' }} 
+                    primaryTypographyProps={{ fontWeight: isSubExpanded ? 800 : 500, fontSize: { xs: '0.85rem', md: '0.9rem' } }} 
                   />
                   {isSubExpanded ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>

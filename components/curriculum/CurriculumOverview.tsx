@@ -19,16 +19,16 @@ interface Props {
 export default function CurriculumOverview({ subject, topic }: Props) {
   if (topic) {
     return (
-      <Box sx={{ p: { xs: 3, md: 6 }, maxWidth: '900px', mx: 'auto' }}>
-        <Typography variant="overline" color="primary" sx={{ fontWeight: 800, letterSpacing: 1.5 }}>
+      <Box sx={{ p: { xs: 2, sm: 3, md: 6 }, maxWidth: '900px', mx: 'auto' }}>
+        <Typography variant="overline" color="primary" sx={{ fontWeight: 800, letterSpacing: 1.5, fontSize: { xs: '0.65rem', sm: '0.75rem' } }}>
           Module Discussion Plan
         </Typography>
-        <Typography variant="h3" sx={{ fontWeight: 900, mb: 1 }}>{topic.title}</Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 4, fontSize: '1.1rem', lineHeight: 1.6 }}>
+        <Typography variant="h3" sx={{ fontWeight: 900, mb: 1, fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' } }}>{topic.title}</Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 4, fontSize: { xs: '0.95rem', md: '1.1rem' }, lineHeight: 1.6 }}>
           {topic.description || `Conceptual deep dive into ${topic.title}.`}
         </Typography>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 2, md: 3 }}>
           {topic.subtopics.map((sub, idx) => (
             <Grid key={sub._id} size={12}>
               <Card 
@@ -41,26 +41,26 @@ export default function CurriculumOverview({ subject, topic }: Props) {
                   '&:hover': { borderColor: 'primary.main' }
                 }}
               >
-                <CardContent sx={{ p: 3 }}>
+                <CardContent sx={{ p: { xs: 2, md: 3 } }}>
                   <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
                     <Avatar 
                       sx={{ 
                         bgcolor: 'primary.main', 
-                        width: 36, 
-                        height: 36, 
-                        fontSize: '1rem', 
+                        width: { xs: 30, md: 36 }, 
+                        height: { xs: 30, md: 36 }, 
+                        fontSize: { xs: '0.875rem', md: '1rem' }, 
                         fontWeight: 'bold' 
                       }}
                     >
                       {idx + 1}
                     </Avatar>
-                    <Typography variant="h6" sx={{ fontWeight: 800 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 800, fontSize: { xs: '1rem', md: '1.25rem' } }}>
                       {sub.title}
                     </Typography>
                   </Stack>
 
-                  <Box sx={{ pl: 6.5 }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  <Box sx={{ pl: { xs: 0, sm: 6.5 } }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2, fontSize: { xs: '0.875rem', md: '1rem' } }}>
                       {sub.description || "We will discuss the architectural foundations and implementation patterns of this module."}
                     </Typography>
                     
@@ -95,64 +95,26 @@ export default function CurriculumOverview({ subject, topic }: Props) {
   }
 
   return (
-    <Box sx={{ p: { xs: 3, md: 8 }, textAlign: 'center', maxWidth: '850px', mx: 'auto' }}>
-      <SchoolIcon sx={{ fontSize: 80, color: 'primary.main', mb: 2, opacity: 0.9 }} />
-      <Typography variant="h2" sx={{ fontWeight: 900, letterSpacing: '-1.5px' }} gutterBottom>
-        {subject.title}
+    <Box sx={{ p: { xs: 4, md: 8 }, textAlign: 'center', maxWidth: '850px', mx: 'auto' }}>
+      <SchoolIcon sx={{ fontSize: { xs: 60, md: 80 }, color: 'primary.main', mb: 2, opacity: 0.9 }} />
+      <Typography variant="h2" sx={{ fontWeight: 900, letterSpacing: '-1.5px', fontSize: { xs: '2.5rem', md: '3.75rem' } }} gutterBottom>
+        Welcome to {subject.title}
       </Typography>
-      <Typography variant="h6" color="text.secondary" sx={{ mb: 6, fontWeight: 400, lineHeight: 1.6, maxWidth: '650px', mx: 'auto' }}>
-        {subject.description || `Welcome! We will discuss the professional roadmap of ${subject.title} using a module-by-module architectural approach.`}
+      <Typography variant="h6" color="text.secondary" sx={{ mb: 4, maxWidth: '600px', mx: 'auto', fontSize: { xs: '1rem', md: '1.25rem' } }}>
+        {subject.description || "Master the concepts with our industry-vetted curriculum designed for deep learning."}
       </Typography>
-
-      <Divider sx={{ mb: 6 }}>
-        <Chip 
-          icon={<MenuBookIcon />} 
-          label="DISCUSSION ROADMAP" 
-          sx={{ fontWeight: 800, px: 2, bgcolor: 'action.selected', letterSpacing: 0.5 }} 
-        />
-      </Divider>
-
-      <Grid container spacing={2.5}>
-        {subject.topics.map((t, idx) => (
-          <Grid key={t._id} size={{ xs: 12, sm: 6 }}>
-            <Box 
-              sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 2.5, 
-                textAlign: 'left', 
-                p: 3, 
-                borderRadius: 3, 
-                border: '1px solid', 
-                borderColor: 'divider',
-                bgcolor: 'background.paper',
-                transition: 'all 0.2s ease-in-out',
-                '&:hover': { 
-                  borderColor: 'primary.main', 
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                  transform: 'translateY(-2px)'
-                }
-              }}
-            >
-              <Typography 
-                variant="h4" 
-                sx={{ 
-                  fontWeight: 900, 
-                  color: 'primary.main', 
-                  opacity: 0.15,
-                  minWidth: '45px'
-                }}
-              >
-                {String(idx + 1).padStart(2, '0')}
-              </Typography>
-              <Box>
-                <Typography variant="subtitle1" sx={{ fontWeight: 800, lineHeight: 1.2, mb: 0.5 }}>
-                  {t.title}
-                </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
-                  {t.subtopics.length} Key Discussion Points
-                </Typography>
-              </Box>
+      
+      <Grid container spacing={3} sx={{ mt: 2 }}>
+        {[
+          { icon: <MenuBookIcon sx={{ fontSize: 32 }} />, label: 'Comprehensive Content', sub: 'In-depth articles & videos' },
+          { icon: <TipsAndUpdatesIcon sx={{ fontSize: 32 }} />, label: 'Expert Insights', sub: 'Industry best practices' },
+          { icon: <SchoolIcon sx={{ fontSize: 32 }} />, label: 'Guided Path', sub: 'Structured learning journey' }
+        ].map((item, i) => (
+          <Grid key={i} size={{ xs: 12, sm: 4 }}>
+            <Box sx={{ p: 2 }}>
+              <Box sx={{ color: 'primary.main', mb: 1 }}>{item.icon}</Box>
+              <Typography variant="subtitle1" fontWeight="bold">{item.label}</Typography>
+              <Typography variant="body2" color="text.secondary">{item.sub}</Typography>
             </Box>
           </Grid>
         ))}

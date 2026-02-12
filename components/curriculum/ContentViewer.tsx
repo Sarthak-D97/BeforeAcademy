@@ -33,14 +33,15 @@ export default function ContentViewer({ material }: Props) {
     <Container 
       maxWidth={isVideo ?"lg":'lg'} 
       sx={{ 
-        py: isVideo ? 1.5 : 4, 
+        py: { xs: 2, md: isVideo ? 1.5 : 4 }, 
+        px: { xs: 2, sm: 3 },
         height: '100%', 
         display: 'flex', 
         flexDirection: 'column',
         overflow: 'hidden',
       }}
     >
-      <Box sx={{ mb: isVideo ? 1 : 4, flexShrink: 0 }}>
+      <Box sx={{ mb: { xs: 2, md: isVideo ? 1 : 4 }, flexShrink: 0 }}>
         <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
           <Chip 
             label={material.category} 
@@ -52,7 +53,7 @@ export default function ContentViewer({ material }: Props) {
             <Chip label={material.difficulty} variant="outlined" size="small" sx={{ height: 20, fontSize: '0.65rem', textTransform: 'capitalize' }} />
           )}
         </Stack>
-        <Typography variant={isVideo ? "h5" : "h3"} fontWeight="800" sx={{ lineHeight: 1.1 }}>
+        <Typography variant={isVideo ? "h5" : "h3"} fontWeight="800" sx={{ lineHeight: 1.1, fontSize: { xs: isVideo ? '1.25rem' : '1.75rem', md: isVideo ? '1.5rem' : '3rem' } }}>
           {material.title}
         </Typography>
         <Typography variant="caption" color="text.secondary">
@@ -96,19 +97,36 @@ export default function ContentViewer({ material }: Props) {
         </Paper>
       )}
 
-      <Box sx={{ flexShrink: 0 }}>
+      <Box sx={{ flexShrink: 0, mt: 'auto' }}>
         <Divider sx={{ mb: 1.5 }} />
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography fontWeight="bold" color="text.secondary" variant="caption">Was this helpful?</Typography>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Tooltip title="Insightful!"><Chip size="small" icon={<LocalFireDepartmentIcon />} label={reactions.fire || 0} onClick={() => handleReaction('fire')} sx={{ bgcolor: 'rgba(255, 87, 34, 0.1)', color: '#ff5722', fontWeight: 'bold' }} /></Tooltip>
-            <Tooltip title="Love it"><Chip size="small" icon={<FavoriteIcon />} label={reactions.heart || 0} onClick={() => handleReaction('heart')} sx={{ bgcolor: 'rgba(233, 30, 99, 0.1)', color: '#e91e63', fontWeight: 'bold' }} /></Tooltip>
-            <Tooltip title="Helpful"><Chip size="small" icon={<ThumbUpIcon />} label={reactions.thumbsUp || 0} onClick={() => handleReaction('thumbsUp')} sx={{ bgcolor: 'rgba(33, 150, 243, 0.1)', color: '#2196f3', fontWeight: 'bold' }} /></Tooltip>
-            <Tooltip title="Not helpful"><Chip size="small" icon={<ThumbDownIcon />} label={reactions.thumbsDown || 0} onClick={() => handleReaction('thumbsDown')} sx={{ bgcolor: 'rgba(158, 158, 158, 0.1)', color: '#757575', fontWeight: 'bold' }} /></Tooltip>
-            <Box sx={{ width: 1, height: 16, bgcolor: 'divider', mx: 0.5 }} />
-            <IconButton size="small" sx={{ color: 'text.secondary' }}><ShareIcon fontSize="inherit" /></IconButton>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack direction="row" spacing={{ xs: 0, sm: 1 }}>
+            <Tooltip title="Insightful">
+              <IconButton onClick={() => handleReaction('fire')} size="small" color={reactions.fire > 0 ? "error" : "default"}>
+                <LocalFireDepartmentIcon fontSize="small" />
+                <Typography variant="caption" sx={{ ml: 0.5 }}>{reactions.fire}</Typography>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Love this">
+              <IconButton onClick={() => handleReaction('heart')} size="small" color={reactions.heart > 0 ? "error" : "default"}>
+                <FavoriteIcon fontSize="small" />
+                <Typography variant="caption" sx={{ ml: 0.5 }}>{reactions.heart}</Typography>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Helpful">
+              <IconButton onClick={() => handleReaction('thumbsUp')} size="small" color={reactions.thumbsUp > 0 ? "primary" : "default"}>
+                <ThumbUpIcon fontSize="small" />
+                <Typography variant="caption" sx={{ ml: 0.5 }}>{reactions.thumbsUp}</Typography>
+              </IconButton>
+            </Tooltip>
           </Stack>
-        </Box>
+
+          <Stack direction="row" spacing={1}>
+            <IconButton size="small">
+              <ShareIcon fontSize="small" />
+            </IconButton>
+          </Stack>
+        </Stack>
       </Box>
     </Container>
   );

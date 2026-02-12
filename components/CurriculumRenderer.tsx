@@ -15,12 +15,16 @@ import {
   Paper,
   Stack,
   Badge,
+  Drawer,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import SchoolIcon from '@mui/icons-material/School';
+import MenuIcon from '@mui/icons-material/Menu';
 
 import { Curriculum, Curriculum_Subjects, Curriculum_Topics, Materials } from '../types/curriculum';
 
@@ -34,6 +38,14 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
   const [activeSubject, setActiveSubject] = useState<Curriculum_Subjects | null>(null);
   const [activeTopic, setActiveTopic] = useState<Curriculum_Topics | null>(null);
   const [activeMaterial, setActiveMaterial] = useState<Materials | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
   const handleSubjectSelect = (s: Curriculum_Subjects) => {
     setActiveSubject(s);
@@ -45,10 +57,12 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
   const handleTopicSelect = (t: Curriculum_Topics) => {
     setActiveTopic(t);
     setActiveMaterial(null);
+    if (isMobile) setMobileOpen(false);
   };
 
   const handleMaterialSelect = (m: Materials) => {
     setActiveMaterial(m);
+    if (isMobile) setMobileOpen(false);
   };
 
   const handleBack = () => {
@@ -62,14 +76,14 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
   };
 
   const TopBarActions = () => (
-    <Stack direction="row" spacing={1.5} alignItems="center">
+    <Stack direction="row" spacing={{ xs: 0.5, sm: 1.5 }} alignItems="center">
       <Paper 
         elevation={0} 
         sx={{ 
           p: '2px 8px', 
-          display: { xs: 'none', sm: 'flex' }, 
+          display: { xs: 'none', lg: 'flex' }, 
           alignItems: 'center', 
-          width: 240, 
+          width: { md: 200, lg: 240 }, 
           bgcolor: 'action.hover', 
           border: '1px solid', 
           borderColor: 'divider', 
@@ -80,7 +94,7 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
         <InputBase sx={{ ml: 1, flex: 1, fontSize: '0.875rem' }} placeholder="Search curriculum..." />
       </Paper>
       <ThemeToggle />
-      <IconButton size="small">
+      <IconButton size="small" sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
         <Badge variant="dot" color="error">
           <NotificationsNoneIcon />
         </Badge>
@@ -88,8 +102,8 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
       <Avatar 
         src="/profile.jpeg" 
         sx={{ 
-          width: 36, 
-          height: 36, 
+          width: { xs: 32, sm: 36 }, 
+          height: { xs: 32, sm: 36 }, 
           border: '2px solid', 
           borderColor: 'primary.main',
           cursor: 'pointer'
@@ -115,15 +129,15 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
               sx={{ borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}
             >
               <Container maxWidth="xl">
-                <Toolbar disableGutters sx={{ minHeight: 64 }}>
+                <Toolbar disableGutters sx={{ minHeight: { xs: 56, sm: 64 } }}>
                    <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Image src="/logo1.png" alt="Logo" width={38} height={38} />
+                    <Image src="/logo1.png" alt="Logo" width={32} height={32} style={{ height: 'auto' }} />
                     <Typography 
                       variant="h4" 
                       sx={{ 
                         fontFamily: '"Caveat", cursive', 
                         fontWeight: 700, 
-                        fontSize: '1.8rem' 
+                        fontSize: { xs: '1.4rem', sm: '1.8rem' } 
                       }}
                     >
                       BeforeAcademy
@@ -143,28 +157,68 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
             exit={{ x: 50, opacity: 0 }} 
             style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}
           >
-            <Sidebar
-              subjects={data.subjects}
-              activeSubjectId={activeSubject._id}
-              activeMaterialId={activeMaterial?._id}
-              onMaterialSelect={handleMaterialSelect}
-              onTopicSelect={handleTopicSelect} 
-            />
+            {/* Desktop Sidebar */}
+            <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+              <Sidebar
+                subjects={data.subjects}
+                activeSubjectId={activeSubject._id}
+                activeMaterialId={activeMaterial?._id}
+                onMaterialSelect={handleMaterialSelect}
+                onTopicSelect={handleTopicSelect} 
+              />
+            </Box>
+
+            {/* Mobile Sidebar Drawer */}
+            <Drawer
+              variant="temporary"
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+              ModalProps={{ keepMounted: true }}
+              sx={{
+                display: { xs: 'block', md: 'none' },
+                '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 280 },
+              }}
+            >
+              <Sidebar
+                subjects={data.subjects}
+                activeSubjectId={activeSubject._id}
+                activeMaterialId={activeMaterial?._id}
+                onMaterialSelect={handleMaterialSelect}
+                onTopicSelect={handleTopicSelect} 
+              />
+            </Drawer>
             
-            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
               <AppBar 
                 position="sticky" 
                 color="default" 
                 elevation={0} 
                 sx={{ borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'background.paper', zIndex: 10 }}
               >
-                <Toolbar sx={{ minHeight: 64 }}>
+                <Toolbar sx={{ minHeight: { xs: 56, sm: 64 }, px: { xs: 1, sm: 2 } }}>
+                  <IconButton
+                    color="inherit"
+                    aria-label="open drawer"
+                    edge="start"
+                    onClick={handleDrawerToggle}
+                    sx={{ mr: 1, display: { md: 'none' } }}
+                  >
+                    <MenuIcon />
+                  </IconButton>
+
                   <Button 
                     startIcon={<ArrowBackIcon />} 
                     onClick={handleBack} 
-                    sx={{ textTransform: 'none', fontWeight: 'bold', color: 'text.primary' }}
+                    sx={{ 
+                      textTransform: 'none', 
+                      fontWeight: 'bold', 
+                      color: 'text.primary',
+                      fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                      minWidth: 'auto',
+                      px: { xs: 1, sm: 2 }
+                    }}
                   >
-                    {activeMaterial || activeTopic ? "Back to Overview" : "Back to Library"}
+                    {activeMaterial || activeTopic ? (isMobile ? "Back" : "Back to Overview") : (isMobile ? "Library" : "Back to Library")}
                   </Button>
                   <Box sx={{ flexGrow: 1 }} />
                   <TopBarActions />
