@@ -134,9 +134,10 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
                     <Typography 
                       variant="h4" 
                       sx={{ 
-                        fontFamily: '"Caveat", cursive', 
-                        fontWeight: 700, 
-                        fontSize: { xs: '1.4rem', sm: '1.8rem' } 
+                        fontWeight: 800, 
+                        fontSize: { xs: '1.25rem', sm: '1.5rem' },
+                        color: 'primary.main',
+                        letterSpacing: '-0.02em'
                       }}
                     >
                       AfterAcademy

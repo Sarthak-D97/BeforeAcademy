@@ -146,45 +146,45 @@ export const WHITE: Color = {
 };
 
 export const PRIMARY: PaletteColor = {
-  light: '#DDE1FF',
-  main: '#3248FF',
-  dark: '#000C6E',
+  light: '#60A5FA',
+  main: '#2563EB',
+  dark: '#1D4ED8',
   contrastText: '#FFFFFF',
 };
 
 export const SECONDARY: PaletteColor = {
-  light: '#f7ccef',
-  main: '#db4cc8',
-  dark: '#9a338e',
+  light: '#FB7185',
+  main: '#F43F5E',
+  dark: '#E11D48',
   contrastText: '#FFFFFF',
 };
 
 export const INFO: PaletteColor = {
-  light: '#74CAFF',
-  main: '#1890FF',
-  dark: '#0C53B7',
-  contrastText: '#fff',
+  light: '#7DD3FC',
+  main: '#0EA5E9',
+  dark: '#0284C7',
+  contrastText: '#FFFFFF',
 };
 
 export const SUCCESS: PaletteColor = {
-  light: '#AAF27F',
-  main: '#54D62C',
-  dark: '#229A16',
-  contrastText: WHITE[800],
+  light: '#6EE7B7',
+  main: '#10B981',
+  dark: '#059669',
+  contrastText: '#FFFFFF',
 };
 
 export const WARNING: PaletteColor = {
-  light: '#FFE16A',
-  main: '#FFC107',
-  dark: '#B78103',
+  light: '#FDE047',
+  main: '#EAB308',
+  dark: '#CA8A04',
   contrastText: WHITE[800],
 };
 
 export const ERROR: PaletteColor = {
-  light: '#FFA48D',
-  main: '#FF4842',
-  dark: '#B72136',
-  contrastText: '#fff',
+  light: '#FDA4AF',
+  main: '#F43F5E',
+  dark: '#E11D48',
+  contrastText: '#FFFFFF',
 };
 
 // ----------------------------------------------------------------------
@@ -271,16 +271,46 @@ export const getTheme = (mode: 'light' | 'dark') => {
   return createTheme({
     palette: currentPalette,
     typography,
+    shadows: [
+      'none',
+      '0px 2px 4px rgba(0,0,0,0.05)',
+      '0px 4px 8px rgba(0,0,0,0.08)',
+      '0px 8px 16px rgba(0,0,0,0.1)',
+      '0px 12px 24px rgba(0,0,0,0.12)',
+      '0px 16px 32px rgba(0,0,0,0.14)',
+      ...Array(19).fill('none')
+    ] as any,
     components: {
       MuiPaper: {
         styleOverrides: {
-          root: { backgroundImage: 'none' },
+          root: { 
+            backgroundImage: 'none',
+            borderRadius: 12,
+            border: mode === 'light' ? '1px solid rgba(0,0,0,0.06)' : '1px solid rgba(255,255,255,0.06)',
+          },
+        },
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: 8,
+            textTransform: 'none',
+            fontWeight: 600,
+            boxShadow: 'none',
+            '&:hover': {
+              boxShadow: 'none',
+            },
+          },
+          containedPrimary: {
+            '&:hover': {
+              backgroundColor: PRIMARY.dark,
+            },
+          },
         },
       },
       MuiAppBar: {
         styleOverrides: {
           root: {
-            // Updated to use the new palette background colors with opacity
             backgroundColor: alpha(
               currentPalette.background?.default || '#fff', 
               0.8
@@ -289,6 +319,20 @@ export const getTheme = (mode: 'light' | 'dark') => {
             borderBottom: '1px solid',
             borderColor: currentPalette.divider,
             boxShadow: 'none',
+          },
+        },
+      },
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            borderRadius: 16,
+            boxShadow: '0px 4px 20px rgba(0,0,0,0.05)',
+            border: 'none',
+            transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+            '&:hover': {
+              transform: 'translateY(-4px)',
+              boxShadow: '0px 12px 30px rgba(0,0,0,0.1)',
+            },
           },
         },
       },

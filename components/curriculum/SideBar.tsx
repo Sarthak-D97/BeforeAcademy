@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Paper, Box, List, ListItemButton, ListItemIcon, ListItemText, 
-  Typography, Collapse, Divider, Tooltip 
+  Typography, Collapse, Divider, Tooltip, alpha, useTheme
 } from '@mui/material';
 
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
@@ -38,6 +38,7 @@ export default function Sidebar({
   onMaterialSelect,
   onTopicSelect
 }: Props) {
+  const theme = useTheme();
   const [expandedSubject, setExpandedSubject] = useState<string | null>(null);
   const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
 
@@ -88,7 +89,15 @@ export default function Sidebar({
               <Box key={subject._id}>
                 <ListItemButton 
                   onClick={() => setExpandedSubject(isSubExpanded ? null : subject._id)}
-                  sx={{ py: 1.5, borderLeft: isSubExpanded ? '4px solid' : '4px solid transparent', borderColor: 'primary.main' }}
+                  sx={{ 
+                    py: 1.5, 
+                    borderLeft: isSubExpanded ? '4px solid' : '4px solid transparent', 
+                    borderColor: 'primary.main',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      bgcolor: 'action.hover',
+                    }
+                  }}
                 >
                   <ListItemIcon sx={{ minWidth: 35 }}>
                     <SchoolIcon fontSize="small" color={isSubExpanded ? "primary" : "action"} />
@@ -109,7 +118,14 @@ export default function Sidebar({
                         <Box key={topic._id}>
                           <ListItemButton 
                             onClick={() => handleTopicClick(topic)}
-                            sx={{ py: 1, pl: 2 }}
+                            sx={{ 
+                              py: 1.2, 
+                              pl: 2.5,
+                              borderRadius: 0,
+                              '&:hover': {
+                                bgcolor: 'action.hover',
+                              }
+                            }}
                           >
                             <ListItemIcon sx={{ minWidth: 30 }}>
                               <FolderIcon fontSize="inherit" color={isTopicExpanded ? "primary" : "disabled"} />
@@ -138,7 +154,20 @@ export default function Sidebar({
                                         key={mat._id} 
                                         selected={mat._id === activeMaterialId} 
                                         onClick={() => handleMaterialClick(mat)}
-                                        sx={{ pl: 4, py: 0.8 }}
+                                        sx={{ 
+                                          pl: 4, 
+                                          py: 1,
+                                          '&.Mui-selected': {
+                                            bgcolor: alpha(theme.palette.primary.main, 0.08),
+                                            color: 'primary.main',
+                                            '&:hover': {
+                                              bgcolor: alpha(theme.palette.primary.main, 0.12),
+                                            },
+                                            '& .MuiListItemIcon-root': {
+                                              color: 'primary.main',
+                                            }
+                                          }
+                                        }}
                                       >
                                         <ListItemIcon sx={{ minWidth: 25 }}>
                                           {getIcon(mat.category)}

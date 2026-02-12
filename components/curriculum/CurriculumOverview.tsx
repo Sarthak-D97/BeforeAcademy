@@ -97,11 +97,12 @@ export default function CurriculumOverview({ subject, topic }: Props) {
   return (
     <Box sx={{ p: { xs: 4, md: 8 }, textAlign: 'center', maxWidth: '850px', mx: 'auto' }}>
       <SchoolIcon sx={{ fontSize: { xs: 60, md: 80 }, color: 'primary.main', mb: 2, opacity: 0.9 }} />
-      <Typography variant="h2" sx={{ fontWeight: 900, letterSpacing: '-1.5px', fontSize: { xs: '2.5rem', md: '3.75rem' } }} gutterBottom>
+      <Typography variant="h2" sx={{ fontWeight: 900, letterSpacing: '-0.02em', fontSize: { xs: '2.5rem', md: '3.75rem' } }} gutterBottom>
         Welcome to {subject.title}
       </Typography>
-      <Typography variant="h6" color="text.secondary" sx={{ mb: 4, maxWidth: '600px', mx: 'auto', fontSize: { xs: '1rem', md: '1.25rem' } }}>
-        {subject.description || "Master the concepts with our industry-vetted curriculum designed for deep learning."}
+      <Typography variant="h6" color="text.secondary" sx={{ mb: 6, fontWeight: 500, lineHeight: 1.6 }}>
+        Accelerate your career with high-quality resources, real-world projects, and a community of professionals. 
+        Select a module from the sidebar to start your learning journey.
       </Typography>
       
       <Grid container spacing={3} sx={{ mt: 2 }}>

@@ -57,7 +57,7 @@ export default function ContentViewer({ material }: Props) {
           {material.title}
         </Typography>
         <Typography variant="caption" color="text.secondary">
-           Published by BeforeAcademy
+           Published by AfterAcademy
         </Typography>
       </Box>
       {isVideo ? (

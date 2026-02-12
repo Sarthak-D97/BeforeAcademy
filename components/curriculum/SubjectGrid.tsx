@@ -27,18 +27,20 @@ export default function SubjectGrid({ subjects, onSelect }: Props) {
         fontWeight="900" 
         gutterBottom 
         sx={{ 
-          background: 'linear-gradient(45deg, #328af1 30%, #ec4899 90%)', 
+          background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)', 
           backgroundClip: 'text', 
           textFillColor: 'transparent', 
           WebkitBackgroundClip: 'text', 
           WebkitTextFillColor: 'transparent',
-          fontSize: { xs: '2.5rem', md: '3rem' }
+          fontSize: { xs: '2.5rem', md: '3.5rem' },
+          letterSpacing: '-0.02em',
+          mb: 1
         }}
       >
         Curriculum Library
       </Typography>
-      <Typography variant="h6" color="text.secondary" sx={{ mb: { xs: 4, md: 6 }, fontSize: { xs: '1rem', md: '1.25rem' } }}>
-        Select a domain to start your journey.
+      <Typography variant="h6" color="text.secondary" sx={{ mb: { xs: 4, md: 6 }, fontSize: { xs: '1rem', md: '1.25rem' }, fontWeight: 500 }}>
+        High-quality resources to help you master tech skills.
       </Typography>
 
       <Grid container spacing={{ xs: 2, md: 4 }}>
@@ -48,16 +50,8 @@ export default function SubjectGrid({ subjects, onSelect }: Props) {
               elevation={0}
               sx={{ 
                 height: '100%',
-                borderRadius: 4, 
-                border: '1px solid', 
-                borderColor: 'divider',
-                bgcolor: 'background.paper', 
-                transition: 'all 0.3s ease',
-                '&:hover': { 
-                  transform: 'translateY(-4px)', 
-                  borderColor: 'primary.main', 
-                  boxShadow: theme.shadows[10] 
-                }
+                display: 'flex',
+                flexDirection: 'column',
               }}
             >
               <CardActionArea 
@@ -75,14 +69,17 @@ export default function SubjectGrid({ subjects, onSelect }: Props) {
                     filter: theme.palette.mode === 'dark' ? 'brightness(0.8)' : 'none' 
                   }} 
                 />
-                <CardContent sx={{ p: { xs: 2, md: 3 }, width: '100%' }}>
-                  <Typography variant="h5" fontWeight="bold" gutterBottom noWrap color="text.primary" sx={{ fontSize: { xs: '1.2rem', md: '1.5rem' } }}>
+                <CardContent sx={{ p: { xs: 2, md: 3 }, width: '100%', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                  <Typography variant="h5" fontWeight="800" gutterBottom noWrap color="text.primary" sx={{ fontSize: { xs: '1.2rem', md: '1.4rem' }, letterSpacing: '-0.01em' }}>
                     {subject.title}
                   </Typography>
-                  <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                    <Chip label={`${subject.topics.length} Modules`} size="small" />
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: '3em' }}>
+                    {subject.description || `Master ${subject.title} with our structured learning path and real-world projects.`}
+                  </Typography>
+                  <Stack direction="row" spacing={1} sx={{ mt: 'auto' }}>
+                    <Chip label={`${subject.topics.length} Modules`} size="small" sx={{ fontWeight: 600, bgcolor: 'action.hover' }} />
                     {subject.score && (
-                      <Chip label={`⭐ ${subject.score}`} size="small" color="primary" variant="outlined" />
+                      <Chip label={`⭐ ${subject.score}`} size="small" color="primary" variant="outlined" sx={{ fontWeight: 700 }} />
                     )}
                   </Stack>
                 </CardContent>

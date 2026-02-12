@@ -12,8 +12,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'Professional Curriculum',
-  description: 'A data-driven curriculum renderer',
+  title: 'AfterAcademy | Professional Curriculum',
+  description: 'Accelerated career growth for tech professionals',
 };
 
 export default function RootLayout({

@@ -23,7 +23,7 @@ export default function FullMaterialPage() {
       <AppBar position="sticky" color="default" elevation={0} sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
         <Toolbar variant="dense" sx={{ minHeight: { xs: 48, sm: 64 } }}>
           <Typography variant="subtitle2" sx={{ flexGrow: 1, fontWeight: 700, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
-            BeforeAcademy Reader
+            AfterAcademy Reader
           </Typography>
           <Button 
             size="small" 
