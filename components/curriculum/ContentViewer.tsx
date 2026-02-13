@@ -1,14 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
-  Container, Box, Typography, Chip, Paper, Divider, Stack, IconButton, Tooltip, useTheme
+  Container, Box, Typography, Chip, Paper, Divider, Stack, IconButton, 
+  Tooltip, useTheme, useMediaQuery, Fade 
 } from '@mui/material';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
+import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite'; // Import Play Icon
 
 import { Materials } from '../../types/curriculum';
 import VideoPlayer from './VideoPlayer'; 
@@ -19,10 +21,44 @@ interface Props {
 
 export default function ContentViewer({ material }: Props) {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Detect Mobile
+  const videoContainerRef = useRef<HTMLDivElement>(null); // Ref for fullscreen
+  
   const [reactions, setReactions] = useState(material.reactions || { fire: 0, thumbsUp: 0, thumbsDown: 0, heart: 0 });
+  // State to track if user has clicked play on mobile
+  const [mobileVideoActive, setMobileVideoActive] = useState(false);
 
   const handleReaction = (type: keyof typeof reactions) => {
     setReactions(prev => ({ ...prev, [type]: (prev[type] || 0) + 1 }));
+  };
+
+  // --- LOGIC: Handle Mobile Play, Rotate & Fullscreen ---
+  const handleMobilePlay = async () => {
+    if (!videoContainerRef.current) return;
+
+    try {
+      // 1. Request Fullscreen
+      const elem = videoContainerRef.current as any;
+      if (elem.requestFullscreen) {
+        await elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) { /* Safari */
+        await elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) { /* IE11 */
+        await elem.msRequestFullscreen();
+      }
+
+      // 2. Lock Orientation to Landscape (Android/Chrome mostly)
+      // Note: iOS Safari does not support screen.orientation.lock, so we wrap in try/catch
+      if (screen.orientation && (screen.orientation as any).lock) {
+        await (screen.orientation as any).lock('landscape');
+      }
+
+    } catch (error) {
+      console.log('Fullscreen/Rotation prevented:', error);
+    } finally {
+      // 3. Reveal the actual player
+      setMobileVideoActive(true);
+    }
   };
 
   const hasNewVideoSchema = material.category === 'video' && material.video && material.video.length > 0;
@@ -31,7 +67,7 @@ export default function ContentViewer({ material }: Props) {
 
   return (
     <Container 
-      maxWidth={isVideo ?"lg":'lg'} 
+      maxWidth={isVideo ? "lg" : 'lg'} 
       sx={{ 
         py: { xs: 2, md: isVideo ? 1.5 : 4 }, 
         px: { xs: 2, sm: 3 },
@@ -60,6 +96,7 @@ export default function ContentViewer({ material }: Props) {
            Published by AfterAcademy
         </Typography>
       </Box>
+      
       {isVideo ? (
         <Box 
           sx={{ 
@@ -71,22 +108,64 @@ export default function ContentViewer({ material }: Props) {
             mb: 1
           }}
         > 
-          <Box sx={{ width: '100%', maxWidth: '125vh', mx: 'auto' }}>
-            {hasNewVideoSchema ? (
-              <VideoPlayer vimeoId={material.video![0].vimeoId} />
-            ) : legacyVideoUrl ? (
-              <Paper elevation={0} sx={{ position: 'relative', pt: '56.25%', borderRadius: 2, overflow: 'hidden', bgcolor: '#000', boxShadow: theme.shadows[2] }}>
-                <iframe
-                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-                  src={material.path?.replace('watch?v=', 'embed/')}
-                  title={material.title}
-                  frameBorder="0"
-                  allowFullScreen
-                />
-              </Paper>
-            ) : (
-              <Typography color="error">Video source missing.</Typography>
+          {/* VIDEO CONTAINER WRAPPER */}
+          <Box 
+            ref={videoContainerRef}
+            sx={{ 
+              width: '100%', 
+              maxWidth: '125vh', 
+              mx: 'auto',
+              position: 'relative', // Needed for overlay positioning
+              bgcolor: '#000', // Background black for fullscreen experience
+            }}
+          >
+            {/* Custom Mobile Overlay: Only shows if Mobile AND video hasn't started */}
+            {isMobile && !mobileVideoActive && (
+              <Box
+                onClick={handleMobilePlay}
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  zIndex: 10,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  bgcolor: 'rgba(0,0,0,0.4)',
+                  cursor: 'pointer',
+                  borderRadius: 2,
+                  transition: 'background 0.3s',
+                  '&:hover': {
+                    bgcolor: 'rgba(0,0,0,0.6)',
+                  }
+                }}
+              >
+                 <PlayCircleFilledWhiteIcon sx={{ fontSize: 80, color: '#fff' }} />
+              </Box>
             )}
+
+            {/* Actual Video Player */}
+            <Box sx={{ opacity: (isMobile && !mobileVideoActive) ? 0.3 : 1, transition: 'opacity 0.5s' }}>
+              {hasNewVideoSchema ? (
+                // If you have access to VideoPlayer, pass an 'playing={mobileVideoActive}' prop if supported
+                // to auto-start the video after rotation.
+                <VideoPlayer vimeoId={material.video![0].vimeoId} />
+              ) : legacyVideoUrl ? (
+                <Paper elevation={0} sx={{ position: 'relative', pt: '56.25%', borderRadius: 2, overflow: 'hidden', bgcolor: '#000', boxShadow: theme.shadows[2] }}>
+                  <iframe
+                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                    src={material.path?.replace('watch?v=', 'embed/')}
+                    title={material.title}
+                    frameBorder="0"
+                    allowFullScreen
+                  />
+                </Paper>
+              ) : (
+                <Typography color="error">Video source missing.</Typography>
+              )}
+            </Box>
           </Box>
         </Box>
       ) : (
