@@ -69,6 +69,48 @@ export default function VideoPlayer({ vimeoId, autoplay = 0, color = 'FF7739' }:
     },
   };
 
+  const handleMobileFullscreen = async () => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+    if (!isMobile) return;
+
+    try {
+      const container = containerRef.current;
+      if (container) {
+        if (container.requestFullscreen) {
+          await container.requestFullscreen();
+        } else if ((container as any).webkitRequestFullscreen) {
+          await (container as any).webkitRequestFullscreen();
+        }
+
+        // Try to rotate to landscape if supported
+        if (screen.orientation && (screen.orientation as any).lock) {
+          await (screen.orientation as any).lock('landscape').catch((err: any) => {
+            console.warn('Orientation lock failed:', err);
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Fullscreen request failed:', error);
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      // Unlock orientation when exiting fullscreen
+      if (!document.fullscreenElement && !(document as any).webkitFullscreenElement && screen.orientation && screen.orientation.unlock) {
+        screen.orientation.unlock();
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
   useEffect(() => {
     if (!isSdkLoaded || !containerRef.current || !window.Vimeo) return;
     const iframe = document.createElement('iframe');
@@ -85,7 +127,10 @@ export default function VideoPlayer({ vimeoId, autoplay = 0, color = 'FF7739' }:
     const player = new window.Vimeo.Player(iframe);
     player.setLoop(false);
     player.on('loaded', (data: any) => bridgeEvent.loaded(data));
-    player.on('play', (data: any) => bridgeEvent.play(data));
+    player.on('play', (data: any) => {
+      bridgeEvent.play(data);
+      handleMobileFullscreen();
+    });
     player.on('pause', (data: any) => bridgeEvent.pause(data));
     player.on('timeupdate', (data: any) => {
       if (data && data.percent && data.percent >= thresholdPct) {

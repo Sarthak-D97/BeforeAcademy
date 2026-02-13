@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import {
   Box,
@@ -33,7 +34,10 @@ import ContentViewer from './curriculum/ContentViewer';
 import CurriculumOverview from './curriculum/CurriculumOverview';
 import ThemeToggle from './ThemeToggle';
 
-export default function CurriculumRenderer({ data }: { data: Curriculum }) {
+function CurriculumContent({ data }: { data: Curriculum }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [activeSubject, setActiveSubject] = useState<Curriculum_Subjects | null>(null);
   const [activeTopic, setActiveTopic] = useState<Curriculum_Topics | null>(null);
   const [activeMaterial, setActiveMaterial] = useState<Materials | null>(null);
@@ -41,6 +45,49 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  // Initialize state from URL on mount and when searchParams change
+  useEffect(() => {
+    const subjectId = searchParams.get('subject');
+    const topicId = searchParams.get('topic');
+    const materialId = searchParams.get('material');
+
+    if (subjectId) {
+      const subject = data.subjects.find((s) => s._id === subjectId);
+      if (subject) {
+        setActiveSubject(subject);
+        if (topicId) {
+          const topic = subject.topics.find((t) => t._id === topicId);
+          if (topic) {
+            setActiveTopic(topic);
+            if (materialId) {
+              const material = topic.subtopics
+                .flatMap((st) => st.materials)
+                .find((m) => m._id === materialId);
+              if (material) {
+                setActiveMaterial(material);
+              }
+            }
+          }
+        }
+      }
+    } else {
+      // Reset if no subject in URL
+      setActiveSubject(null);
+      setActiveTopic(null);
+      setActiveMaterial(null);
+    }
+  }, [searchParams, data.subjects]);
+
+  const updateUrl = (sId?: string, tId?: string, mId?: string) => {
+    const params = new URLSearchParams();
+    if (sId) params.set('subject', sId);
+    if (tId) params.set('topic', tId);
+    if (mId) params.set('material', mId);
+    
+    const queryString = params.toString();
+    router.push(queryString ? `?${queryString}` : '/');
+  };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -50,27 +97,37 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
     setActiveSubject(s);
     setActiveTopic(null);
     setActiveMaterial(null);
+    updateUrl(s._id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleTopicSelect = (t: Curriculum_Topics) => {
     setActiveTopic(t);
     setActiveMaterial(null);
+    if (activeSubject) {
+      updateUrl(activeSubject._id, t._id);
+    }
     if (isMobile) setMobileOpen(false);
   };
 
   const handleMaterialSelect = (m: Materials) => {
     setActiveMaterial(m);
+    if (activeSubject && activeTopic) {
+      updateUrl(activeSubject._id, activeTopic._id, m._id);
+    }
     if (isMobile) setMobileOpen(false);
   };
 
   const handleBack = () => {
     if (activeMaterial) {
       setActiveMaterial(null);
+      if (activeSubject && activeTopic) updateUrl(activeSubject._id, activeTopic._id);
     } else if (activeTopic) {
       setActiveTopic(null);
+      if (activeSubject) updateUrl(activeSubject._id);
     } else {
       setActiveSubject(null);
+      updateUrl();
     }
   };
 
@@ -165,6 +222,7 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
                 activeMaterialId={activeMaterial?._id}
                 onMaterialSelect={handleMaterialSelect}
                 onTopicSelect={handleTopicSelect} 
+                onClose={handleDrawerToggle}
               />
             </Box>
 
@@ -184,6 +242,7 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
                 activeMaterialId={activeMaterial?._id}
                 onMaterialSelect={handleMaterialSelect}
                 onTopicSelect={handleTopicSelect} 
+                onClose={handleDrawerToggle}
               />
             </Drawer>
             
@@ -259,5 +318,13 @@ export default function CurriculumRenderer({ data }: { data: Curriculum }) {
         )}
       </AnimatePresence>
     </Box>
+  );
+}
+
+export default function CurriculumRenderer({ data }: { data: Curriculum }) {
+  return (
+    <Suspense fallback={<Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</Box>}>
+      <CurriculumContent data={data} />
+    </Suspense>
   );
 }

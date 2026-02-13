@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Paper, Box, List, ListItemButton, ListItemIcon, ListItemText, 
-  Typography, Collapse, Divider, Tooltip, alpha, useTheme
+  Typography, Collapse, Divider, Tooltip, alpha, useTheme, IconButton
 } from '@mui/material';
 
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
@@ -14,6 +14,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import SchoolIcon from '@mui/icons-material/School';
 import FolderIcon from '@mui/icons-material/Folder';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 
 import { Curriculum_Subjects, Curriculum_Topics, Materials } from '../../types/curriculum';
 
@@ -29,6 +30,7 @@ interface Props {
   activeMaterialId?: string;
   onMaterialSelect: (m: Materials) => void;
   onTopicSelect: (t: Curriculum_Topics) => void; 
+  onClose?: () => void;
 }
 
 export default function Sidebar({ 
@@ -36,7 +38,8 @@ export default function Sidebar({
   activeSubjectId, 
   activeMaterialId, 
   onMaterialSelect,
-  onTopicSelect
+  onTopicSelect,
+  onClose
 }: Props) {
   const theme = useTheme();
   const [expandedSubject, setExpandedSubject] = useState<string | null>(null);
@@ -78,6 +81,19 @@ export default function Sidebar({
         <Typography variant="overline" fontWeight="900" color="text.secondary" letterSpacing={1.2}>
           Course Content
         </Typography>
+        {onClose && (
+          <IconButton 
+            onClick={onClose} 
+            size="small" 
+            sx={{ 
+              display: { xs: 'inline-flex', md: 'none' },
+              color: 'text.secondary',
+              '&:hover': { color: 'primary.main' }
+            }}
+          >
+            <MenuOpenIcon />
+          </IconButton>
+        )}
       </Box>
 
       <Box sx={{ overflowY: 'auto', flexGrow: 1 }}>
