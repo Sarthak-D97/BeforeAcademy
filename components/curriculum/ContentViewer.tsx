@@ -1,32 +1,69 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Container, Box, Typography, Chip, Paper, Divider, Stack, IconButton, 
-  Tooltip, useTheme, useMediaQuery, Fade 
+  Tooltip, useTheme, useMediaQuery, Fade, LinearProgress, Button
 } from '@mui/material';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
-import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite'; // Import Play Icon
+import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 
 import { Materials } from '../../types/curriculum';
 import VideoPlayer from './VideoPlayer'; 
 
 interface Props {
   material: Materials;
+  onNext?: () => void;
+  onPrev?: () => void;
+  hasNext?: boolean;
+  hasPrev?: boolean;
+  progress?: number;
 }
 
-export default function ContentViewer({ material }: Props) {
+export default function ContentViewer({ material, onNext, onPrev, hasNext, hasPrev, progress }: Props) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Detect Mobile
-  const videoContainerRef = useRef<HTMLDivElement>(null); // Ref for fullscreen
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const videoContainerRef = useRef<HTMLDivElement>(null);
   
   const [reactions, setReactions] = useState(material.reactions || { fire: 0, thumbsUp: 0, thumbsDown: 0, heart: 0 });
-  // State to track if user has clicked play on mobile
   const [mobileVideoActive, setMobileVideoActive] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showControls, setShowControls] = useState(true);
+  const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsFullscreen(!!(document.fullscreenElement || (document as any).webkitFullscreenElement));
+    };
+    document.addEventListener('fullscreenchange', handleFsChange);
+    document.addEventListener('webkitfullscreenchange', handleFsChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFsChange);
+      document.removeEventListener('webkitfullscreenchange', handleFsChange);
+    };
+  }, []);
+
+  const handleUserActivity = () => {
+    if (!isFullscreen) return;
+    setShowControls(true);
+    if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+    controlsTimeoutRef.current = setTimeout(() => setShowControls(false), 3000);
+  };
+
+  const exitFullscreen = () => {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if ((document as any).webkitExitFullscreen) {
+      (document as any).webkitExitFullscreen();
+    }
+  };
 
   const handleReaction = (type: keyof typeof reactions) => {
     setReactions(prev => ({ ...prev, [type]: (prev[type] || 0) + 1 }));
@@ -111,14 +148,109 @@ export default function ContentViewer({ material }: Props) {
           {/* VIDEO CONTAINER WRAPPER */}
           <Box 
             ref={videoContainerRef}
+            onMouseMove={handleUserActivity}
+            onTouchStart={handleUserActivity}
             sx={{ 
               width: '100%', 
               maxWidth: '125vh', 
               mx: 'auto',
               position: 'relative', // Needed for overlay positioning
               bgcolor: '#000', // Background black for fullscreen experience
+              borderRadius: isFullscreen ? 0 : 2,
+              overflow: 'hidden'
             }}
           >
+            {/* FULLSCREEN / MOBILE OVERLAY CONTROLS */}
+            {isFullscreen && (
+              <Fade in={showControls}>
+                <Box 
+                  sx={{ 
+                    position: 'absolute', 
+                    top: 0, left: 0, right: 0, bottom: 0, 
+                    zIndex: 20,
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.8) 100%)',
+                    pointerEvents: 'none',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    p: { xs: 2, md: 4 }
+                  }}
+                >
+                   {/* Top Bar: Title and Exit */}
+                   <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ pointerEvents: 'auto' }}>
+                      <Box>
+                        <Typography variant="caption" sx={{ color: 'primary.light', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1 }}>Now Playing</Typography>
+                        <Typography variant="h6" sx={{ color: '#fff', fontWeight: 800, lineHeight: 1.2 }}>{material.title}</Typography>
+                      </Box>
+                      <IconButton onClick={exitFullscreen} sx={{ color: '#fff', bgcolor: 'rgba(255,255,255,0.1)', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}>
+                        <FullscreenExitIcon />
+                      </IconButton>
+                   </Stack>
+
+                   {/* Bottom Bar: Prev, Progress, Next */}
+                   <Box sx={{ pointerEvents: 'auto' }}>
+                      <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600, minWidth: 40 }}>
+                          {Math.round(progress || 0)}%
+                        </Typography>
+                        <Box sx={{ flexGrow: 1 }}>
+                           <LinearProgress 
+                              variant="determinate" 
+                              value={progress || 0} 
+                              sx={{ 
+                                height: 6, 
+                                borderRadius: 3, 
+                                bgcolor: 'rgba(255,255,255,0.2)', 
+                                '& .MuiLinearProgress-bar': { 
+                                  bgcolor: 'primary.main',
+                                  borderRadius: 3
+                                } 
+                              }} 
+                           />
+                        </Box>
+                      </Stack>
+                      
+                      <Stack direction="row" justifyContent="space-between" alignItems="center">
+                         <Button 
+                            variant="contained"
+                            startIcon={<NavigateBeforeIcon />} 
+                            disabled={!hasPrev} 
+                            onClick={(e) => { e.stopPropagation(); onPrev?.(); }}
+                            sx={{ 
+                              bgcolor: 'rgba(255,255,255,0.1)', 
+                              color: '#fff', 
+                              textTransform: 'none', 
+                              fontWeight: 700,
+                              borderRadius: 2,
+                              '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' },
+                              '&.Mui-disabled': { color: 'rgba(255,255,255,0.3)', bgcolor: 'rgba(255,255,255,0.05)' } 
+                            }}
+                         >
+                            Previous
+                         </Button>
+                         <Button 
+                            variant="contained"
+                            endIcon={<NavigateNextIcon />} 
+                            disabled={!hasNext} 
+                            onClick={(e) => { e.stopPropagation(); onNext?.(); }}
+                            sx={{ 
+                              bgcolor: 'primary.main', 
+                              color: '#fff', 
+                              textTransform: 'none', 
+                              fontWeight: 700,
+                              borderRadius: 2,
+                              '&:hover': { bgcolor: 'primary.dark' },
+                              '&.Mui-disabled': { color: 'rgba(255,255,255,0.3)', bgcolor: 'rgba(255,255,255,0.05)' } 
+                            }}
+                         >
+                            Next
+                         </Button>
+                      </Stack>
+                   </Box>
+                </Box>
+              </Fade>
+            )}
+
             {/* Custom Mobile Overlay: Only shows if Mobile AND video hasn't started */}
             {isMobile && !mobileVideoActive && (
               <Box
@@ -200,7 +332,53 @@ export default function ContentViewer({ material }: Props) {
             </Tooltip>
           </Stack>
 
-          <Stack direction="row" spacing={1}>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Button 
+              size="small" 
+              startIcon={<NavigateBeforeIcon />} 
+              disabled={!hasPrev} 
+              onClick={onPrev}
+              sx={{ display: { xs: 'none', sm: 'inline-flex' }, textTransform: 'none', fontWeight: 700 }}
+            >
+              Previous
+            </Button>
+            
+            {/* Mobile Nav Icons */}
+            <IconButton 
+              size="small" 
+              disabled={!hasPrev} 
+              onClick={onPrev}
+              sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
+            >
+              <NavigateBeforeIcon />
+            </IconButton>
+
+            <Box sx={{ width: 60, display: { xs: 'none', md: 'block' } }}>
+               <LinearProgress variant="determinate" value={progress || 0} sx={{ height: 4, borderRadius: 2 }} />
+            </Box>
+
+            <IconButton 
+              size="small" 
+              disabled={!hasNext} 
+              onClick={onNext}
+              sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
+            >
+              <NavigateNextIcon />
+            </IconButton>
+
+            <Button 
+              size="small" 
+              variant="contained"
+              endIcon={<NavigateNextIcon />} 
+              disabled={!hasNext} 
+              onClick={onNext}
+              sx={{ display: { xs: 'none', sm: 'inline-flex' }, textTransform: 'none', fontWeight: 700 }}
+            >
+              Next
+            </Button>
+
+            <Divider orientation="vertical" flexItem sx={{ mx: 0.5, display: { xs: 'none', sm: 'block' } }} />
+            
             <IconButton size="small">
               <ShareIcon fontSize="small" />
             </IconButton>

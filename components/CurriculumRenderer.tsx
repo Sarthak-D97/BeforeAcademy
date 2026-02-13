@@ -118,6 +118,29 @@ function CurriculumContent({ data }: { data: Curriculum }) {
     if (isMobile) setMobileOpen(false);
   };
 
+  const getAllMaterials = () => {
+    if (!activeTopic) return [];
+    return activeTopic.subtopics.flatMap(st => st.materials);
+  };
+
+  const allMaterialsInTopic = getAllMaterials();
+  const currentMaterialIndex = allMaterialsInTopic.findIndex(m => m._id === activeMaterial?._id);
+  const hasNextMaterial = currentMaterialIndex !== -1 && currentMaterialIndex < allMaterialsInTopic.length - 1;
+  const hasPrevMaterial = currentMaterialIndex > 0;
+  const courseProgress = allMaterialsInTopic.length > 0 ? ((currentMaterialIndex + 1) / allMaterialsInTopic.length) * 100 : 0;
+
+  const handleNextMaterial = () => {
+    if (hasNextMaterial) {
+      handleMaterialSelect(allMaterialsInTopic[currentMaterialIndex + 1]);
+    }
+  };
+
+  const handlePrevMaterial = () => {
+    if (hasPrevMaterial) {
+      handleMaterialSelect(allMaterialsInTopic[currentMaterialIndex - 1]);
+    }
+  };
+
   const handleBack = () => {
     if (activeMaterial) {
       setActiveMaterial(null);
@@ -296,7 +319,14 @@ function CurriculumContent({ data }: { data: Curriculum }) {
                       exit={{ opacity: 0 }}
                       style={{ height: '100%' }}
                     >
-                      <ContentViewer material={activeMaterial} />
+                      <ContentViewer 
+                        material={activeMaterial} 
+                        onNext={handleNextMaterial}
+                        onPrev={handlePrevMaterial}
+                        hasNext={hasNextMaterial}
+                        hasPrev={hasPrevMaterial}
+                        progress={courseProgress}
+                      />
                     </motion.div>
                   ) : (
 
