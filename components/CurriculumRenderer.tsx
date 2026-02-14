@@ -202,10 +202,16 @@ function CurriculumContent({ data }: { data: Curriculum }) {
             exit={{ opacity: 0 }}
           >
             <AppBar 
-              position="sticky" 
+              position="fixed" // UPDATED: Changed from sticky to fixed
               color="default" 
               elevation={0} 
-              sx={{ borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}
+              sx={{ 
+                borderBottom: '1px solid', 
+                borderColor: 'divider', 
+                bgcolor: 'background.paper',
+                width: '100%',
+                zIndex: 1100 
+              }}
             >
               <Container maxWidth="xl">
                 <Toolbar disableGutters sx={{ minHeight: { xs: 56, sm: 64 } }}>
@@ -227,6 +233,9 @@ function CurriculumContent({ data }: { data: Curriculum }) {
                 </Toolbar>
               </Container>
             </AppBar>
+            {/* ADDED: Spacer Toolbar to prevent content from hiding behind fixed AppBar */}
+            <Toolbar sx={{ minHeight: { xs: 56, sm: 64 } }} />
+            
             <SubjectGrid subjects={data.subjects} onSelect={handleSubjectSelect} />
           </motion.div>
         ) : (

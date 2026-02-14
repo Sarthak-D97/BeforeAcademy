@@ -103,6 +103,7 @@ export default function Sidebar({
 
             return (
               <Box key={subject._id}>
+                {/* SUBJECT ITEM */}
                 <ListItemButton 
                   onClick={() => setExpandedSubject(isSubExpanded ? null : subject._id)}
                   sx={{ 
@@ -120,9 +121,14 @@ export default function Sidebar({
                   </ListItemIcon>
                   <ListItemText 
                     primary={subject.title} 
-                    primaryTypographyProps={{ fontWeight: isSubExpanded ? 800 : 500, fontSize: { xs: '0.85rem', md: '0.9rem' } }} 
+                    primaryTypographyProps={{ 
+                      // UPDATE: Change color if expanded
+                      color: isSubExpanded ? 'primary.main' : 'text.primary',
+                      fontWeight: isSubExpanded ? 800 : 500, 
+                      fontSize: { xs: '0.85rem', md: '0.9rem' } 
+                    }} 
                   />
-                  {isSubExpanded ? <ExpandLess /> : <ExpandMore />}
+                  {isSubExpanded ? <ExpandLess color="primary" /> : <ExpandMore />}
                 </ListItemButton>
 
                 <Collapse in={isSubExpanded} timeout="auto" unmountOnExit>
@@ -132,6 +138,7 @@ export default function Sidebar({
 
                       return (
                         <Box key={topic._id}>
+                          {/* TOPIC ITEM */}
                           <ListItemButton 
                             onClick={() => handleTopicClick(topic)}
                             sx={{ 
@@ -148,9 +155,14 @@ export default function Sidebar({
                             </ListItemIcon>
                             <ListItemText 
                               primary={topic.title} 
-                              primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: isTopicExpanded ? 700 : 400 }} 
+                              primaryTypographyProps={{ 
+                                // UPDATE: Change color if expanded
+                                color: isTopicExpanded ? 'primary.main' : 'text.primary',
+                                fontSize: '0.85rem', 
+                                fontWeight: isTopicExpanded ? 700 : 400 
+                              }} 
                             />
-                            {isTopicExpanded ? <ExpandLess fontSize="inherit" /> : <ExpandMore fontSize="inherit" />}
+                            {isTopicExpanded ? <ExpandLess fontSize="inherit" color="primary" /> : <ExpandMore fontSize="inherit" />}
                           </ListItemButton>
 
                           <Collapse in={isTopicExpanded} timeout="auto" unmountOnExit>
@@ -164,17 +176,20 @@ export default function Sidebar({
                                   </Box>
                                   {sub.materials?.map((mat) => {
                                     const isExternal = mat.category === 'article' || mat.category === 'problem';
+                                    const isSelected = mat._id === activeMaterialId;
                                     
                                     return (
+                                      // MATERIAL ITEM
                                       <ListItemButton 
                                         key={mat._id} 
-                                        selected={mat._id === activeMaterialId} 
+                                        selected={isSelected} 
                                         onClick={() => handleMaterialClick(mat)}
                                         sx={{ 
                                           pl: 4, 
                                           py: 1,
                                           '&.Mui-selected': {
                                             bgcolor: alpha(theme.palette.primary.main, 0.08),
+                                            // The color here usually affects the Icon, but text needs explicit handling often
                                             color: 'primary.main',
                                             '&:hover': {
                                               bgcolor: alpha(theme.palette.primary.main, 0.12),
@@ -191,8 +206,10 @@ export default function Sidebar({
                                         <ListItemText 
                                           primary={mat.title} 
                                           primaryTypographyProps={{ 
+                                            // UPDATE: Explicitly change color if selected
+                                            color: isSelected ? 'primary.main' : 'text.primary',
                                             fontSize: '0.75rem', 
-                                            fontWeight: mat._id === activeMaterialId ? 700 : 400,
+                                            fontWeight: isSelected ? 700 : 400,
                                             display: 'flex',
                                             alignItems: 'center',
                                             gap: 0.5

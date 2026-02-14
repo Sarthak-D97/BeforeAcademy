@@ -37,6 +37,7 @@ export default function ContentViewer({ material, onNext, onPrev, hasNext, hasPr
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const handleFsChange = () => {
@@ -44,6 +45,7 @@ export default function ContentViewer({ material, onNext, onPrev, hasNext, hasPr
     };
     document.addEventListener('fullscreenchange', handleFsChange);
     document.addEventListener('webkitfullscreenchange', handleFsChange);
+    setMounted(true);
     return () => {
       document.removeEventListener('fullscreenchange', handleFsChange);
       document.removeEventListener('webkitfullscreenchange', handleFsChange);
@@ -315,19 +317,19 @@ export default function ContentViewer({ material, onNext, onPrev, hasNext, hasPr
             <Tooltip title="Insightful">
               <IconButton onClick={() => handleReaction('fire')} size="small" color={reactions.fire > 0 ? "error" : "default"}>
                 <LocalFireDepartmentIcon fontSize="small" />
-                <Typography variant="caption" sx={{ ml: 0.5 }}>{reactions.fire}</Typography>
+                <Typography variant="caption" sx={{ ml: 0.5 }}>{mounted ? reactions.fire : 0}</Typography>
               </IconButton>
             </Tooltip>
             <Tooltip title="Love this">
               <IconButton onClick={() => handleReaction('heart')} size="small" color={reactions.heart > 0 ? "error" : "default"}>
                 <FavoriteIcon fontSize="small" />
-                <Typography variant="caption" sx={{ ml: 0.5 }}>{reactions.heart}</Typography>
+                <Typography variant="caption" sx={{ ml: 0.5 }}>{mounted ? reactions.heart : 0}</Typography>
               </IconButton>
             </Tooltip>
             <Tooltip title="Helpful">
               <IconButton onClick={() => handleReaction('thumbsUp')} size="small" color={reactions.thumbsUp > 0 ? "primary" : "default"}>
                 <ThumbUpIcon fontSize="small" />
-                <Typography variant="caption" sx={{ ml: 0.5 }}>{reactions.thumbsUp}</Typography>
+                <Typography variant="caption" sx={{ ml: 0.5 }}>{mounted ? reactions.thumbsUp : 0}</Typography>
               </IconButton>
             </Tooltip>
           </Stack>
