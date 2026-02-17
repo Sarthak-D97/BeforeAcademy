@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import Script from 'next/script';
 
@@ -151,7 +151,7 @@ export default function VideoPlayer({ vimeoId, autoplay = 0, color = 'FF7739' }:
         ref={containerRef} 
         sx={{ 
           position: 'relative', 
-          pt: '56.25%', // 16:9 Aspect Ratio
+          pt: '56.25%', 
           bgcolor: '#000',
           width: '100%',
           display: 'flex',
