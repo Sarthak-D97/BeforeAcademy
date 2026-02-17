@@ -330,11 +330,6 @@ function CurriculumContent({ data }: { data: Curriculum }) {
                     >
                       <ContentViewer 
                         material={activeMaterial} 
-                        onNext={handleNextMaterial}
-                        onPrev={handlePrevMaterial}
-                        hasNext={hasNextMaterial}
-                        hasPrev={hasPrevMaterial}
-                        progress={courseProgress}
                       />
                     </motion.div>
                   ) : (
